@@ -1,50 +1,96 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report
+- Version change: 1.0.0 → 1.0.1 (platform constraint narrowed)
+- Modified principles: N/A (initial)
+- Added sections: Core Principles (5), Technical Constraints,
+  Development Workflow, Governance
+- Removed sections: None
+- Templates requiring updates:
+  - .specify/templates/plan-template.md — ✅ no updates needed
+  - .specify/templates/spec-template.md — ✅ no updates needed
+  - .specify/templates/tasks-template.md — ✅ no updates needed
+  - .specify/templates/commands/*.md — no files present
+- Follow-up TODOs: None
+-->
+
+# Tiffen Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Data Safety
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+Original TIFF files MUST NOT be modified in place unless the user
+explicitly opts in via a flag (e.g., `--in-place`). The default
+behavior MUST write normalized outputs to a separate location or
+use a non-destructive naming convention. Any operation that could
+cause data loss MUST require explicit confirmation or a force flag.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### II. Correctness First
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+Exposure normalization MUST produce pixel-accurate results. The
+exposure range of every output file MUST match the base TIFF's
+range within documented numerical precision. Rounding, clamping,
+and bit-depth conversion behavior MUST be explicitly defined and
+tested against known reference images.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### III. CLI-First
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+Tiffen is a command-line tool. All functionality MUST be accessible
+via CLI arguments and flags. Input is file paths and options; output
+is normalized TIFF files plus human-readable status on stdout and
+errors on stderr. Exit codes MUST follow standard conventions
+(0 = success, non-zero = failure).
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+### IV. Simplicity
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+Tiffen does one thing: normalize exposure across a set of TIFFs to
+match a base file. Features MUST directly serve this purpose. YAGNI
+applies — no speculative abstractions, plugin systems, or GUI layers
+unless explicitly requested. Prefer the standard library and minimal
+dependencies.
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+### V. Testability
+
+Every exposure calculation and file-handling path MUST be testable
+with known reference TIFF fixtures. Tests MUST verify round-trip
+correctness: a file normalized to a base and then re-normalized to
+itself MUST be unchanged within precision bounds.
+
+## Technical Constraints
+
+- **Supported format**: TIFF files (all common bit depths: 8, 16,
+  32-bit integer and floating point).
+- **Performance**: Processing MUST scale linearly with the number
+  of files. Large directories (1000+ files) MUST remain usable.
+- **Platform**: MUST run on macOS. Cross-platform support is not
+  a goal.
+- **Dependencies**: Minimize external dependencies. Image I/O
+  libraries are acceptable; large frameworks are not.
+
+## Development Workflow
+
+- All changes MUST be developed on feature branches and merged via
+  pull request.
+- Each PR MUST include tests that exercise the changed behavior.
+- CI MUST pass before merge: linting, type checking (if applicable),
+  and all tests green.
+- Commit messages MUST be descriptive and reference the relevant
+  spec or issue when applicable.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+This constitution is the authoritative source of development
+principles for Tiffen. It supersedes informal conventions or
+ad-hoc decisions.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+- **Amendments**: Any change to this constitution MUST be documented
+  with a version bump, rationale, and updated date.
+- **Versioning**: Constitution versions follow semantic versioning
+  (MAJOR.MINOR.PATCH). MAJOR for principle removals or redefinitions,
+  MINOR for new principles or material expansions, PATCH for
+  clarifications and wording fixes.
+- **Compliance**: All PRs and code reviews SHOULD verify alignment
+  with these principles. Deviations MUST be justified in the PR
+  description.
+
+**Version**: 1.0.1 | **Ratified**: 2026-04-17 | **Last Amended**: 2026-04-17
