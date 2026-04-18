@@ -44,10 +44,23 @@ typedef struct {
         if (!_commandQueue) return nil;
 
         NSError *libError = nil;
-        _library = [_device newDefaultLibrary];
+
+        // Load metallib from the TiffenCore framework bundle.
+        // This works for both CLI (framework embedded beside executable)
+        // and GUI (framework embedded in app bundle).
+        NSBundle *frameworkBundle = [NSBundle bundleForClass:[self class]];
+        NSString *bundlePath = [frameworkBundle pathForResource:@"default"
+                                                        ofType:@"metallib"];
+        if (bundlePath) {
+            NSURL *libURL = [NSURL fileURLWithPath:bundlePath];
+            _library = [_device newLibraryWithURL:libURL error:&libError];
+        }
         if (!_library) {
-            // For command-line tools, newDefaultLibrary won't work.
-            // Find metallib next to the executable using _NSGetExecutablePath.
+            // Fallback: default library (works in test bundles)
+            _library = [_device newDefaultLibrary];
+        }
+        if (!_library) {
+            // Last resort: find metallib next to executable
             char pathBuf[PATH_MAX];
             uint32_t pathSize = sizeof(pathBuf);
             if (_NSGetExecutablePath(pathBuf, &pathSize) == 0) {
@@ -59,15 +72,6 @@ typedef struct {
                     NSURL *libURL = [NSURL fileURLWithPath:libPath];
                     _library = [_device newLibraryWithURL:libURL error:&libError];
                 }
-            }
-        }
-        if (!_library) {
-            // Last resort: try NSBundle mainBundle
-            NSString *bundlePath = [[NSBundle mainBundle] pathForResource:@"default"
-                                                                  ofType:@"metallib"];
-            if (bundlePath) {
-                NSURL *libURL = [NSURL fileURLWithPath:bundlePath];
-                _library = [_device newLibraryWithURL:libURL error:&libError];
             }
         }
         if (!_library) return nil;

@@ -14,15 +14,18 @@ settings:
     CLANG_WARN_DOCUMENTATION_COMMENTS: NO
 
 targets:
-  tiffen:
-    type: tool
+  TiffenCore:
+    type: framework
     platform: macOS
     sources:
       - path: src
         excludes:
           - "**/*.metal"
+        headerVisibility: public
     settings:
       base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.tiffen.core
+        DEFINES_MODULE: YES
         HEADER_SEARCH_PATHS:
           - "$(SRCROOT)/src"
           - /opt/homebrew/include
@@ -32,37 +35,73 @@ targets:
           - "-ltiff"
           - "-lz"
         MTL_HEADER_SEARCH_PATHS: "$(SRCROOT)/src/Shaders"
-        METAL_LIBRARY_OUTPUT_DIR: "$(BUILT_PRODUCTS_DIR)"
+        METAL_LIBRARY_OUTPUT_DIR: "$(BUILT_PRODUCTS_DIR)/TiffenCore.framework/Resources"
         GCC_PREPROCESSOR_DEFINITIONS:
           - "TIFFEN_VERSION=\\\"0.1.0\\\""
+        GENERATE_INFOPLIST_FILE: YES
     dependencies: []
     preBuildScripts:
       - name: Compile Metal Shaders
         script: |
           set -e
           METAL_SOURCE="${SRCROOT}/src/Shaders/normalize.metal"
+          METALLIB_DIR="${BUILT_PRODUCTS_DIR}/TiffenCore.framework/Resources"
+          mkdir -p "$METALLIB_DIR"
           if [ -f "$METAL_SOURCE" ]; then
             xcrun metal -c "$METAL_SOURCE" -o "${DERIVED_FILE_DIR}/normalize.air"
-            xcrun metallib "${DERIVED_FILE_DIR}/normalize.air" -o "${BUILT_PRODUCTS_DIR}/default.metallib"
+            xcrun metallib "${DERIVED_FILE_DIR}/normalize.air" -o "${METALLIB_DIR}/default.metallib"
           fi
         inputFiles:
           - $(SRCROOT)/src/Shaders/normalize.metal
         outputFiles:
-          - $(BUILT_PRODUCTS_DIR)/default.metallib
+          - $(BUILT_PRODUCTS_DIR)/TiffenCore.framework/Resources/default.metallib
+
+  tiffen:
+    type: tool
+    platform: macOS
+    sources:
+      - path: cli
+    settings:
+      base:
+        HEADER_SEARCH_PATHS:
+          - "$(SRCROOT)/src"
+        GCC_PREPROCESSOR_DEFINITIONS:
+          - "TIFFEN_VERSION=\\\"0.1.0\\\""
+    dependencies:
+      - target: TiffenCore
+        embed: true
+
+  tiffenApp:
+    type: application
+    platform: macOS
+    sources:
+      - path: app
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.tiffen.app
+        PRODUCT_NAME: Tiffen
+        HEADER_SEARCH_PATHS:
+          - "$(SRCROOT)/src"
+          - "$(SRCROOT)/app"
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_NSMainNibFile: ""
+        INFOPLIST_KEY_NSPrincipalClass: NSApplication
+        GCC_PREPROCESSOR_DEFINITIONS:
+          - "TIFFEN_VERSION=\\\"0.1.0\\\""
+    dependencies:
+      - target: TiffenCore
+        embed: true
 
   tiffenTests:
     type: bundle.unit-test
     platform: macOS
     sources:
       - path: tests
-      - path: src
-        excludes:
-          - "main.m"
-          - "**/*.metal"
     settings:
       base:
         HEADER_SEARCH_PATHS:
           - "$(SRCROOT)/src"
+          - "$(SRCROOT)/app"
           - /opt/homebrew/include
         LIBRARY_SEARCH_PATHS:
           - /opt/homebrew/lib
@@ -73,6 +112,5 @@ targets:
         GCC_PREPROCESSOR_DEFINITIONS:
           - "TIFFEN_VERSION=\\\"0.1.0\\\""
     dependencies:
-      - target: tiffen
+      - target: TiffenCore
         embed: false
-        link: false

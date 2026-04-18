@@ -15,13 +15,13 @@
 
 **Purpose**: Create directory structure and configure build system for three-target layout
 
-- [ ] T001 Create `cli/` directory and move `src/main.m` to `cli/main.m`
-- [ ] T002 Create `app/` directory structure per plan.md
-- [ ] T003a Update `project.yml`: add `TiffenCore` framework target compiling `src/` (exclude `**/*.metal`), linking libtiff (`-ltiff`, `-lz`) and Metal framework, with `DEFINES_MODULE: YES` and public headers: `TFNNormalizer.h`, `TFNExposureRange.h`, `TFNTIFFReader.h`, `TFNTIFFWriter.h`, `TFNMetalNormalizer.h`, `TFNCPUNormalizer.h`
-- [ ] T003b Update `project.yml`: update `tiffen` CLI tool target to compile `cli/` only, add `TiffenCore` as embedded dependency, remove direct libtiff/Metal linking (framework provides these)
-- [ ] T003c Update `project.yml`: add `tiffenApp` application target compiling `app/`, add `TiffenCore` as embedded dependency, set bundle ID `com.tiffen.app`, link AppKit
-- [ ] T004 Add Metal shader pre-build script to `TiffenCore` target in `project.yml` and update shader loading in `TFNMetalNormalizer.m` to load `default.metallib` from `[NSBundle bundleForClass:]` instead of main bundle
-- [ ] T005 Run `xcodegen generate` and verify all three targets build successfully with `xcodebuild`
+- [x] T001 Create `cli/` directory and move `src/main.m` to `cli/main.m`
+- [x] T002 Create `app/` directory structure per plan.md
+- [x] T003a Update `project.yml`: add `TiffenCore` framework target compiling `src/` (exclude `**/*.metal`), linking libtiff (`-ltiff`, `-lz`) and Metal framework, with `DEFINES_MODULE: YES` and public headers: `TFNNormalizer.h`, `TFNExposureRange.h`, `TFNTIFFReader.h`, `TFNTIFFWriter.h`, `TFNMetalNormalizer.h`, `TFNCPUNormalizer.h`
+- [x] T003b Update `project.yml`: update `tiffen` CLI tool target to compile `cli/` only, add `TiffenCore` as embedded dependency, remove direct libtiff/Metal linking (framework provides these)
+- [x] T003c Update `project.yml`: add `tiffenApp` application target compiling `app/`, add `TiffenCore` as embedded dependency, set bundle ID `com.tiffen.app`, link AppKit
+- [x] T004 Add Metal shader pre-build script to `TiffenCore` target in `project.yml` and update shader loading in `TFNMetalNormalizer.m` to load `default.metallib` from `[NSBundle bundleForClass:]` instead of main bundle
+- [x] T005 Run `xcodegen generate` and verify all three targets build successfully with `xcodebuild`
 
 ---
 
