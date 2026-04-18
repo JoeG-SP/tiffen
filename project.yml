@@ -97,6 +97,9 @@ targets:
     platform: macOS
     sources:
       - path: tests
+      - path: app
+        excludes:
+          - "main.m"
     settings:
       base:
         HEADER_SEARCH_PATHS:
