@@ -55,7 +55,9 @@ exposure ranges are known.
 | offset | float[] | Per-channel: `base_min - src_min * scale` |
 | channelCount | NSUInteger | Number of channels |
 
-**Derived from**: base TFNExposureRange + target TFNExposureRange.
+**Derived from**: base TFNExposureRange + target TFNExposureRange
+via `+ paramsWithBaseRange:sourceRange:` which computes scale and
+offset for each channel.
 
 **Degenerate case**: If `src_max == src_min` for a channel (flat
 exposure), set `scale = 0` and `offset = base_min` for that channel.

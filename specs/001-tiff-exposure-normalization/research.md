@@ -65,45 +65,24 @@ an explicit copy, using `MTLResourceStorageModeShared`.
 
 ## R3: Exposure Range Computation
 
-**Decision**: Compute min/max per channel using a two-pass approach:
-first pass computes base TIFF range, second pass normalizes each target.
+**Decision**: Two-pass approach per file — GPU parallel reduction
+for min/max, then GPU normalization with precomputed scale+offset.
 
-**Rationale**: Computing min/max requires reading all pixels. For the
-base TIFF this is a single scan. For target TIFFs, the min/max scan
-and normalization can be fused into a single Metal dispatch using
-a parallel reduction for min/max followed by the remap kernel, or
-kept as two separate dispatches for clarity.
-
-**Implementation approach**:
-- Base range: CPU scan via libtiff (single file, done once).
-- Target range: Metal parallel reduction per channel, then remap.
-- For simplicity in v1, target min/max can also be computed on CPU
-  during the libtiff decode pass, avoiding a reduction kernel.
-  The remap kernel then only needs the four values (src_min, src_max,
-  base_min, base_max) as uniforms.
-
-**Two-pass approach per target file**:
-- **Pass 1 (min/max scan)**: Read all pixels and compute per-channel
-  min and max. This can be a Metal parallel reduction or a CPU scan
-  during the libtiff decode (since we touch every pixel anyway).
-- **Precompute scale+offset**: Once both base and target ranges are
-  known, compute per-channel: `scale = (base_max - base_min) / (src_max - src_min)`
-  and `offset = base_min - src_min * scale`. These are scalar values.
-- **Pass 2 (normalize)**: The compute kernel applies
-  `out = in * scale + offset` per channel. No min/max lookup, no
-  branching, no division — just a multiply-add. This makes the
-  normalization kernel extremely cheap (ALU-bound, single MAD
-  per pixel per channel).
-
-**Decision (updated)**: Compute min/max on GPU via Metal parallel
-reduction. Each threadgroup reduces its chunk to a per-channel
-min/max, written to a results buffer. The CPU performs the final
-reduction over threadgroup results (typically a few thousand
-entries — negligible). This eliminates the serial CPU scan over
-every pixel, which was the bottleneck for large files (e.g., 454M
-samples for a 14204x10652 16-bit RGB). Precompute scale and offset
-on CPU from the GPU-computed ranges. Falls back to CPU min/max if
-Metal is unavailable.
+**Per-file pipeline**:
+1. **Read**: libtiff decodes TIFF into pixel buffer (CPU, includes
+   decompression)
+2. **Range (GPU)**: Metal parallel reduction computes per-channel
+   min/max. Each threadgroup reduces its chunk; CPU does final
+   reduction over threadgroup results (typically a few thousand
+   entries — negligible). Falls back to CPU scan if Metal unavailable.
+3. **Precompute**: CPU computes per-channel
+   `scale = (base_max - base_min) / (src_max - src_min)` and
+   `offset = base_min - src_min * scale` from GPU-computed ranges.
+4. **Normalize (GPU)**: Compute kernel applies
+   `out = in * scale + offset` per pixel per channel. Single MAD,
+   no branching, no division.
+5. **Write**: libtiff encodes pixel buffer to TIFF (CPU, includes
+   compression)
 
 **Degenerate case — flat exposure (src_max == src_min)**:
 When a target image has uniform pixel values on a channel, the
