@@ -4,7 +4,7 @@
 
 - macOS 14+ on Apple Silicon
 - Xcode 15+ (for Metal compiler and XCTest)
-- libtiff is vendored in `vendor/libtiff/` — no Homebrew install needed
+- libtiff (`brew install libtiff`)
 
 ## Build
 
