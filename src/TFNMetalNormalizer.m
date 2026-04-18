@@ -12,6 +12,12 @@ typedef struct {
     uint32_t pixelCount;
 } MetalNormalizeParams;
 
+/// Must match MinMaxResult in normalize.metal
+typedef struct {
+    float mins[4];
+    float maxs[4];
+} MetalMinMaxResult;
+
 @implementation TFNMetalNormalizer {
     id<MTLDevice> _device;
     id<MTLCommandQueue> _commandQueue;
@@ -20,6 +26,10 @@ typedef struct {
     id<MTLComputePipelineState> _pipelineUint16;
     id<MTLComputePipelineState> _pipelineUint32;
     id<MTLComputePipelineState> _pipelineFloat32;
+    id<MTLComputePipelineState> _minmaxUint8;
+    id<MTLComputePipelineState> _minmaxUint16;
+    id<MTLComputePipelineState> _minmaxUint32;
+    id<MTLComputePipelineState> _minmaxFloat32;
 }
 
 - (nullable instancetype)init {
@@ -53,6 +63,17 @@ typedef struct {
             !_pipelineUint32 || !_pipelineFloat32) {
             return nil;
         }
+
+        // Create min/max reduction pipelines
+        _minmaxUint8 = [self pipelineForFunction:@"minmax_uint8"];
+        _minmaxUint16 = [self pipelineForFunction:@"minmax_uint16"];
+        _minmaxUint32 = [self pipelineForFunction:@"minmax_uint32"];
+        _minmaxFloat32 = [self pipelineForFunction:@"minmax_float32"];
+
+        if (!_minmaxUint8 || !_minmaxUint16 ||
+            !_minmaxUint32 || !_minmaxFloat32) {
+            return nil;
+        }
     }
     return self;
 }
@@ -64,6 +85,120 @@ typedef struct {
     id<MTLComputePipelineState> pipeline =
         [_device newComputePipelineStateWithFunction:function error:&error];
     return pipeline;
+}
+
+- (nullable TFNExposureRange *)computeExposureRangeForImage:(TFNTIFFImage *)image
+                                                      error:(NSError **)error {
+    NSUInteger pixelCount = image.width * image.height;
+
+    // Select minmax pipeline
+    id<MTLComputePipelineState> pipeline;
+    if (image.isFloat && image.bitDepth == 32) {
+        pipeline = _minmaxFloat32;
+    } else if (image.bitDepth == 8) {
+        pipeline = _minmaxUint8;
+    } else if (image.bitDepth == 16) {
+        pipeline = _minmaxUint16;
+    } else if (image.bitDepth == 32) {
+        pipeline = _minmaxUint32;
+    } else {
+        if (error) {
+            *error = [NSError errorWithDomain:TFNMetalNormalizerErrorDomain
+                                         code:1
+                                     userInfo:@{NSLocalizedDescriptionKey:
+                                         @"Unsupported bit depth for minmax"}];
+        }
+        return nil;
+    }
+
+    // Wrap pixel data
+    id<MTLBuffer> pixelBuffer =
+        [_device newBufferWithBytesNoCopy:image.pixelData
+                                  length:image.pixelDataLength
+                                 options:MTLResourceStorageModeShared
+                             deallocator:nil];
+    if (!pixelBuffer) {
+        pixelBuffer = [_device newBufferWithBytes:image.pixelData
+                                           length:image.pixelDataLength
+                                          options:MTLResourceStorageModeShared];
+    }
+    if (!pixelBuffer) {
+        if (error) {
+            *error = [NSError errorWithDomain:TFNMetalNormalizerErrorDomain
+                                         code:2
+                                     userInfo:@{NSLocalizedDescriptionKey:
+                                         @"Failed to create Metal buffer for minmax"}];
+        }
+        return nil;
+    }
+
+    // Threadgroup size for reduction — must be power of 2 for tree reduction
+    NSUInteger tgSize = 256;
+    NSUInteger numGroups = (pixelCount + tgSize - 1) / tgSize;
+
+    // Allocate results buffer — one MinMaxResult per threadgroup
+    id<MTLBuffer> resultsBuffer =
+        [_device newBufferWithLength:numGroups * sizeof(MetalMinMaxResult)
+                             options:MTLResourceStorageModeShared];
+    if (!resultsBuffer) {
+        if (error) {
+            *error = [NSError errorWithDomain:TFNMetalNormalizerErrorDomain
+                                         code:2
+                                     userInfo:@{NSLocalizedDescriptionKey:
+                                         @"Failed to create results buffer"}];
+        }
+        return nil;
+    }
+
+    // Prepare params
+    MetalNormalizeParams metalParams = {0};
+    metalParams.channelCount = (uint32_t)image.channelCount;
+    metalParams.bitDepth = (uint32_t)image.bitDepth;
+    metalParams.isFloat = image.isFloat ? 1 : 0;
+    metalParams.pixelCount = (uint32_t)pixelCount;
+
+    // Dispatch
+    id<MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
+    id<MTLComputeCommandEncoder> encoder = [commandBuffer computeCommandEncoder];
+
+    [encoder setComputePipelineState:pipeline];
+    [encoder setBuffer:pixelBuffer offset:0 atIndex:0];
+    [encoder setBuffer:resultsBuffer offset:0 atIndex:1];
+    [encoder setBytes:&metalParams length:sizeof(metalParams) atIndex:2];
+
+    MTLSize threadsPerGroup = MTLSizeMake(tgSize, 1, 1);
+    MTLSize gridSize = MTLSizeMake(numGroups * tgSize, 1, 1);
+
+    [encoder dispatchThreads:gridSize threadsPerThreadgroup:threadsPerGroup];
+    [encoder endEncoding];
+
+    [commandBuffer commit];
+    [commandBuffer waitUntilCompleted];
+
+    if (commandBuffer.error) {
+        if (error) *error = commandBuffer.error;
+        return nil;
+    }
+
+    // Final reduction on CPU over threadgroup results
+    MetalMinMaxResult *gpuResults = (MetalMinMaxResult *)resultsBuffer.contents;
+    NSUInteger channels = MIN(image.channelCount, 4u);
+    float mins[4], maxs[4];
+    for (NSUInteger c = 0; c < channels; c++) {
+        mins[c] = FLT_MAX;
+        maxs[c] = -FLT_MAX;
+    }
+
+    for (NSUInteger g = 0; g < numGroups; g++) {
+        for (NSUInteger c = 0; c < channels; c++) {
+            if (gpuResults[g].mins[c] < mins[c]) mins[c] = gpuResults[g].mins[c];
+            if (gpuResults[g].maxs[c] > maxs[c]) maxs[c] = gpuResults[g].maxs[c];
+        }
+    }
+
+    return [[TFNExposureRange alloc] initWithChannelCount:channels
+                                                minValues:mins
+                                                maxValues:maxs];
 }
 
 - (BOOL)normalizeImage:(TFNTIFFImage *)image

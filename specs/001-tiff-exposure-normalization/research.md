@@ -95,10 +95,15 @@ kept as two separate dispatches for clarity.
   normalization kernel extremely cheap (ALU-bound, single MAD
   per pixel per channel).
 
-**Decision for v1**: Compute target min/max on CPU during the libtiff
-decode pass (single scan through pixel data anyway). Precompute
-scale and offset on CPU. The Metal kernel only performs the
-multiply-add, keeping it minimal and fast.
+**Decision (updated)**: Compute min/max on GPU via Metal parallel
+reduction. Each threadgroup reduces its chunk to a per-channel
+min/max, written to a results buffer. The CPU performs the final
+reduction over threadgroup results (typically a few thousand
+entries — negligible). This eliminates the serial CPU scan over
+every pixel, which was the bottleneck for large files (e.g., 454M
+samples for a 14204x10652 16-bit RGB). Precompute scale and offset
+on CPU from the GPU-computed ranges. Falls back to CPU min/max if
+Metal is unavailable.
 
 **Degenerate case — flat exposure (src_max == src_min)**:
 When a target image has uniform pixel values on a channel, the

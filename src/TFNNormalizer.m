@@ -61,7 +61,19 @@ NSString *const TFNNormalizerErrorDomain = @"TFNNormalizerErrorDomain";
         return nil;
     }
 
-    TFNExposureRange *baseRange = baseImage.exposureRange;
+    // Initialize Metal normalizer early — needed for GPU range computation
+    TFNMetalNormalizer *metalNorm = [[TFNMetalNormalizer alloc] init];
+    BOOL useMetal = (metalNorm != nil);
+
+    // Compute base exposure range (GPU if available, CPU fallback)
+    TFNExposureRange *baseRange = nil;
+    if (useMetal) {
+        baseRange = [metalNorm computeExposureRangeForImage:baseImage error:nil];
+    }
+    if (!baseRange) {
+        [baseImage computeExposureRange];
+        baseRange = baseImage.exposureRange;
+    }
 
     // Enumerate TIFF files in directory
     NSArray<NSString *> *contents = [fm contentsOfDirectoryAtPath:inputDirectory error:nil];
@@ -138,10 +150,6 @@ NSString *const TFNNormalizerErrorDomain = @"TFNNormalizerErrorDomain";
         return result;
     }
 
-    // Initialize Metal normalizer
-    TFNMetalNormalizer *metalNorm = [[TFNMetalNormalizer alloc] init];
-    BOOL useMetal = (metalNorm != nil);
-
     if (self.verbosity != TFNVerbosityQuiet) {
         NSString *modeStr = (self.outputMode == TFNOutputModeInPlace) ? @"in-place" : @"";
         fprintf(stdout, "Normalizing %lu files to match base: %s%s\n",
@@ -166,10 +174,20 @@ NSString *const TFNNormalizerErrorDomain = @"TFNNormalizerErrorDomain";
             continue;
         }
 
+        // Compute target exposure range (GPU if available, CPU fallback)
+        TFNExposureRange *targetRange = nil;
+        if (useMetal) {
+            targetRange = [metalNorm computeExposureRangeForImage:targetImage error:nil];
+        }
+        if (!targetRange) {
+            [targetImage computeExposureRange];
+            targetRange = targetImage.exposureRange;
+        }
+
         // Compute normalization params (handles flat exposure: scale=0, offset=base_min)
         TFNNormalizationParams *params =
             [TFNNormalizationParams paramsWithBaseRange:baseRange
-                                           sourceRange:targetImage.exposureRange];
+                                           sourceRange:targetRange];
 
         // Check for flat exposure warnings
         for (NSUInteger c = 0; c < params.channelCount; c++) {

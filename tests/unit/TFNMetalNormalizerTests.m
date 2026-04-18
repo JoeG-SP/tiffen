@@ -125,4 +125,83 @@
     free(gpuData);
 }
 
+- (void)testGPUMinMaxMatchesCPUForUint16 {
+    if (!self.metalNorm) return;
+
+    NSUInteger pixelCount = 4096;
+    NSUInteger channels = 3;
+    NSUInteger bufLen = pixelCount * channels * sizeof(uint16_t);
+
+    uint16_t *data = malloc(bufLen);
+    for (NSUInteger i = 0; i < pixelCount * channels; i++) {
+        data[i] = (uint16_t)(i % 65536);
+    }
+
+    // CPU range
+    TFNExposureRange *cpuRange = [TFNExposureRange rangeFromPixelData:data
+                                                                width:pixelCount height:1
+                                                         channelCount:channels bitDepth:16 isFloat:NO];
+
+    // GPU range
+    TFNTIFFImage *image = [[TFNTIFFImage alloc] init];
+    image.width = pixelCount;
+    image.height = 1;
+    image.channelCount = channels;
+    image.bitDepth = 16;
+    image.isFloat = NO;
+    image.pixelData = data;
+    image.pixelDataLength = bufLen;
+
+    NSError *error = nil;
+    TFNExposureRange *gpuRange = [self.metalNorm computeExposureRangeForImage:image error:&error];
+    XCTAssertNotNil(gpuRange, @"GPU minmax failed: %@", error);
+
+    for (NSUInteger c = 0; c < channels; c++) {
+        XCTAssertEqualWithAccuracy(gpuRange.minValues[c], cpuRange.minValues[c], 0.5f,
+                                    @"Min mismatch channel %lu: GPU=%f CPU=%f",
+                                    (unsigned long)c, gpuRange.minValues[c], cpuRange.minValues[c]);
+        XCTAssertEqualWithAccuracy(gpuRange.maxValues[c], cpuRange.maxValues[c], 0.5f,
+                                    @"Max mismatch channel %lu: GPU=%f CPU=%f",
+                                    (unsigned long)c, gpuRange.maxValues[c], cpuRange.maxValues[c]);
+    }
+
+    image.pixelData = NULL;
+    free(data);
+}
+
+- (void)testGPUMinMaxMatchesCPUForFloat32 {
+    if (!self.metalNorm) return;
+
+    NSUInteger pixelCount = 2048;
+    NSUInteger bufLen = pixelCount * sizeof(float);
+
+    float *data = malloc(bufLen);
+    for (NSUInteger i = 0; i < pixelCount; i++) {
+        data[i] = -1.0f + 2.0f * (float)i / (float)(pixelCount - 1);
+    }
+
+    TFNExposureRange *cpuRange = [TFNExposureRange rangeFromPixelData:data
+                                                                width:pixelCount height:1
+                                                         channelCount:1 bitDepth:32 isFloat:YES];
+
+    TFNTIFFImage *image = [[TFNTIFFImage alloc] init];
+    image.width = pixelCount;
+    image.height = 1;
+    image.channelCount = 1;
+    image.bitDepth = 32;
+    image.isFloat = YES;
+    image.pixelData = data;
+    image.pixelDataLength = bufLen;
+
+    NSError *error = nil;
+    TFNExposureRange *gpuRange = [self.metalNorm computeExposureRangeForImage:image error:&error];
+    XCTAssertNotNil(gpuRange, @"GPU minmax failed: %@", error);
+
+    XCTAssertEqualWithAccuracy(gpuRange.minValues[0], cpuRange.minValues[0], 1e-5f);
+    XCTAssertEqualWithAccuracy(gpuRange.maxValues[0], cpuRange.maxValues[0], 1e-5f);
+
+    image.pixelData = NULL;
+    free(data);
+}
+
 @end

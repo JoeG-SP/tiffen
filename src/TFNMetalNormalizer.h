@@ -13,6 +13,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// Returns nil if Metal is not available.
 - (nullable instancetype)init;
 
+/// Compute per-channel min/max exposure range on the GPU.
+/// Returns nil on failure.
+- (nullable TFNExposureRange *)computeExposureRangeForImage:(TFNTIFFImage *)image
+                                                      error:(NSError **)error;
+
 /// Normalize pixel data in-place using Metal compute.
 /// The pixel buffer is wrapped in a shared MTLBuffer (no copy on Apple Silicon).
 /// Returns NO if Metal dispatch fails.
