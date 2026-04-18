@@ -1,0 +1,37 @@
+# Xcode
+build/
+DerivedData/
+*.xcuserdata
+*.xcworkspace
+!*.xcworkspace/contents.xcworkspacedata
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+xcuserdata/
+*.xccheckout
+*.moved-aside
+*.xcscmblueprint
+
+# Metal compiled
+*.air
+*.metallib
+
+# macOS
+.DS_Store
+Thumbs.db
+*.swp
+*.tmp
+
+# Build artifacts
+*.o
+*.d
+*.a
+*.dylib
+
+# IDE
+.vscode/
+.idea/
+
+# Environment
+.env*

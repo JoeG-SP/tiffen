@@ -1,0 +1,809 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0315B62014ABF28D608835A4 /* tif_codec.c in Sources */ = {isa = PBXBuildFile; fileRef = 72C808DF6CEB4CEC341BC55F /* tif_codec.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		0372EBD91E27414B999CD563 /* tif_fax3.c in Sources */ = {isa = PBXBuildFile; fileRef = 4F264220DD2271D3AD7ADB35 /* tif_fax3.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		07B225EF5A882D62287C671C /* TFNInPlaceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EC6067A0A80D68276F981F90 /* TFNInPlaceTests.m */; };
+		0CFEE452D9D0F6AE212A32BF /* TFNNormalizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 5A8730CDBA8FE6CF12E5857B /* TFNNormalizer.m */; };
+		0D3471393DB812FB6890CDC1 /* tif_aux.c in Sources */ = {isa = PBXBuildFile; fileRef = EA2DFD2A99BF438C4D47F7E9 /* tif_aux.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		0D73AF636FB98F95A8958605 /* tif_version.c in Sources */ = {isa = PBXBuildFile; fileRef = DE042E9BBCAFD91CB21BE995 /* tif_version.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		113E2F2E4579420CBA7960F8 /* tif_fax3.c in Sources */ = {isa = PBXBuildFile; fileRef = 4F264220DD2271D3AD7ADB35 /* tif_fax3.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		15D81F7A4E2298B70ECEDF5E /* tif_strip.c in Sources */ = {isa = PBXBuildFile; fileRef = 57AB6E633EBCACC5AACD47AE /* tif_strip.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		1B2294243D1F7343BE9A17A9 /* tif_extension.c in Sources */ = {isa = PBXBuildFile; fileRef = 5E9C70445AC7C3E502740169 /* tif_extension.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		1D8154107F2548AA28D1B5F3 /* TFNCLITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 496EFC1C7BBD657D1708FD27 /* TFNCLITests.m */; };
+		22DF87B54E5FDDBBEDDC17E1 /* tif_codec.c in Sources */ = {isa = PBXBuildFile; fileRef = 72C808DF6CEB4CEC341BC55F /* tif_codec.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		297D64E1B49DA002473A3697 /* tif_color.c in Sources */ = {isa = PBXBuildFile; fileRef = A4E0F0E8B22F974D40337487 /* tif_color.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		33641AF2A1A1009D479FA209 /* tif_compress.c in Sources */ = {isa = PBXBuildFile; fileRef = 213976CB1880ECB49F3B14FD /* tif_compress.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		33F0343ADF9DFAEC01490A28 /* tif_luv.c in Sources */ = {isa = PBXBuildFile; fileRef = A4A80FCDDBE128012D7DFE56 /* tif_luv.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		39BED7C937E0D60FB8B8FBC1 /* tif_aux.c in Sources */ = {isa = PBXBuildFile; fileRef = EA2DFD2A99BF438C4D47F7E9 /* tif_aux.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		3BAF79ADB247F34698B52643 /* tif_dir.c in Sources */ = {isa = PBXBuildFile; fileRef = 741F06D02BC8111913F97A03 /* tif_dir.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		3D771D733A39387708C08F2C /* tif_open.c in Sources */ = {isa = PBXBuildFile; fileRef = 96CCB84DCFD022E768CE86C0 /* tif_open.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		3DDD31106674C925084D02FD /* TFNExposureRange.m in Sources */ = {isa = PBXBuildFile; fileRef = 247429A7083AACB02C275C30 /* TFNExposureRange.m */; };
+		3E19CA0B213950FE7B000952 /* tif_strip.c in Sources */ = {isa = PBXBuildFile; fileRef = 57AB6E633EBCACC5AACD47AE /* tif_strip.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		4036F3019BEC3A46072AB17E /* tif_zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 1051C7D861756B28A8C0467F /* tif_zip.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		4071500C99B70A7EEE2AE46E /* tif_fax3sm.c in Sources */ = {isa = PBXBuildFile; fileRef = 916CB0D47B2A88D132DB0E8A /* tif_fax3sm.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		427B757F1AD42B02E9190911 /* tif_flush.c in Sources */ = {isa = PBXBuildFile; fileRef = 25D6638BF0773939E984BA4F /* tif_flush.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		4BAC6A421502D2DBDEEBECAC /* tif_next.c in Sources */ = {isa = PBXBuildFile; fileRef = 641AE3685DA6640202940E28 /* tif_next.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		4C799F15E9A6E85402859E94 /* tif_dumpmode.c in Sources */ = {isa = PBXBuildFile; fileRef = 5186CEC3EDA828F0592DE86C /* tif_dumpmode.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		4F0B096F466339C0EA81F384 /* TFNMetalNormalizer.m in Sources */ = {isa = PBXBuildFile; fileRef = E154D608778D55D1AD4D8EFB /* TFNMetalNormalizer.m */; };
+		53E85B5138AEB0E3267759E8 /* TFNExposureRangeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E155FE573354FA9FBD965C76 /* TFNExposureRangeTests.m */; };
+		583C0824EA6662B1B1CD9819 /* tif_error.c in Sources */ = {isa = PBXBuildFile; fileRef = 2275C7A66D66361E103B8A7C /* tif_error.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		5E64DB43A08EA26A8B8C6B26 /* tif_close.c in Sources */ = {isa = PBXBuildFile; fileRef = E369D7E60D329C13E4828602 /* tif_close.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		5E6E6A70F1689F967D602A76 /* tif_dirread.c in Sources */ = {isa = PBXBuildFile; fileRef = 463A10AC105021FC33F01DC1 /* tif_dirread.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		6214962B891087AE8FE2E2B1 /* tif_close.c in Sources */ = {isa = PBXBuildFile; fileRef = E369D7E60D329C13E4828602 /* tif_close.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		64768E2047D75B86C9966397 /* tif_getimage.c in Sources */ = {isa = PBXBuildFile; fileRef = E600813D2EE7779BD34B5EE0 /* tif_getimage.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		65E6A3B5A1620F34E86D0C21 /* tif_swab.c in Sources */ = {isa = PBXBuildFile; fileRef = D63D32C21DF4982CB2C572AB /* tif_swab.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		6722816F6CE8867822336816 /* tif_dirwrite.c in Sources */ = {isa = PBXBuildFile; fileRef = ADE667F3581BFDCA2F71A31E /* tif_dirwrite.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		699CC050918CD553C42A3BB0 /* tif_read.c in Sources */ = {isa = PBXBuildFile; fileRef = 590BD0D341774CF0B0132146 /* tif_read.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		6C5AAFC93BD9135BB7EBDA12 /* tif_swab.c in Sources */ = {isa = PBXBuildFile; fileRef = D63D32C21DF4982CB2C572AB /* tif_swab.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		6E882B841F42FCBF5928E417 /* TFNProgressTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C7C3B045488F4772C110E053 /* TFNProgressTests.m */; };
+		71C3E7417A52BF6F40E148EC /* tif_dir.c in Sources */ = {isa = PBXBuildFile; fileRef = 741F06D02BC8111913F97A03 /* tif_dir.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		732C45A0B5B1421E02D0F6A7 /* TFNMetalNormalizerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A9D2C34D52EB7D8373A3D89C /* TFNMetalNormalizerTests.m */; };
+		7D5A8FA9BC8EE36E45166EAB /* TFNTIFFReader.m in Sources */ = {isa = PBXBuildFile; fileRef = AA748C5793430A64C0319BEA /* TFNTIFFReader.m */; };
+		7D912730F3C84A291DB24D1B /* tif_dirread.c in Sources */ = {isa = PBXBuildFile; fileRef = 463A10AC105021FC33F01DC1 /* tif_dirread.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		851D3DD71E58F4BE2CFA12F6 /* tif_open.c in Sources */ = {isa = PBXBuildFile; fileRef = 96CCB84DCFD022E768CE86C0 /* tif_open.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		85922E96217B5EB1F79C71A9 /* tif_hash_set.c in Sources */ = {isa = PBXBuildFile; fileRef = 8360BD8A65595ECC66187CB1 /* tif_hash_set.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		86C6E04C98303383F5D7AF9D /* tif_flush.c in Sources */ = {isa = PBXBuildFile; fileRef = 25D6638BF0773939E984BA4F /* tif_flush.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		899EF759A3CEFDE60D4F5B5C /* tif_packbits.c in Sources */ = {isa = PBXBuildFile; fileRef = 463E122E0ECC4D9BFD08CA03 /* tif_packbits.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		8A10331A58A356E88EFFB04C /* tif_print.c in Sources */ = {isa = PBXBuildFile; fileRef = 31DBA7746590E2E9078F9AD3 /* tif_print.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		8C0871C60F7217ED0954289E /* tif_getimage.c in Sources */ = {isa = PBXBuildFile; fileRef = E600813D2EE7779BD34B5EE0 /* tif_getimage.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		94E9E4CA3B92BB2373C8039F /* TFNCPUNormalizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 58D0F9AEF5D0BC254765C165 /* TFNCPUNormalizer.m */; };
+		95A14215EB652FD76879EEAB /* tif_predict.c in Sources */ = {isa = PBXBuildFile; fileRef = 48FEC890958F5D49C063F1D5 /* tif_predict.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		97DCCBBFD797006C705E18DE /* tif_dirwrite.c in Sources */ = {isa = PBXBuildFile; fileRef = ADE667F3581BFDCA2F71A31E /* tif_dirwrite.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		98C20B2EDB74E44A325709FF /* TFNTIFFWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1612952C377B137E1DB62125 /* TFNTIFFWriter.m */; };
+		9E8AC0B1FDC51BF4F4C11442 /* tif_extension.c in Sources */ = {isa = PBXBuildFile; fileRef = 5E9C70445AC7C3E502740169 /* tif_extension.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		9F7CB6BFA2D94C85599759FA /* tif_compress.c in Sources */ = {isa = PBXBuildFile; fileRef = 213976CB1880ECB49F3B14FD /* tif_compress.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		A13C60490AA03688B0E3E7B2 /* TFNCPUNormalizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 58D0F9AEF5D0BC254765C165 /* TFNCPUNormalizer.m */; };
+		A20A79A24CAE9151FC82A719 /* TFNTIFFWriterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E398D33D331D78C8577B9C /* TFNTIFFWriterTests.m */; };
+		A284573F25A4AA523483C2FD /* LICENSE.md in Resources */ = {isa = PBXBuildFile; fileRef = E7E81FDB5A6DEBD2A77CF993 /* LICENSE.md */; };
+		A2E4F9532DCCA11A304A3E05 /* tif_tile.c in Sources */ = {isa = PBXBuildFile; fileRef = A7538D919EBAB1ECFDCDB1FE /* tif_tile.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		A8A124E0E2E324DD31EEE08B /* tif_unix.c in Sources */ = {isa = PBXBuildFile; fileRef = 905DEEADD6F5936F782CAB2B /* tif_unix.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		A8AB49ECF68E6D2DB181F245 /* tif_predict.c in Sources */ = {isa = PBXBuildFile; fileRef = 48FEC890958F5D49C063F1D5 /* tif_predict.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		A8CC252F3153171667379E74 /* tif_lzw.c in Sources */ = {isa = PBXBuildFile; fileRef = 62FE89D87AD1B6A8F6D5E448 /* tif_lzw.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		B013E5D0F794A6D6772AC503 /* tif_thunder.c in Sources */ = {isa = PBXBuildFile; fileRef = F476A0605569E2951A4FB09E /* tif_thunder.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		B0DAB293A8720014C863672B /* tif_thunder.c in Sources */ = {isa = PBXBuildFile; fileRef = F476A0605569E2951A4FB09E /* tif_thunder.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		B33C78E11F11AD5576B5DC89 /* tif_warning.c in Sources */ = {isa = PBXBuildFile; fileRef = E56052C3DC053FB47FF6B217 /* tif_warning.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		B36D7071B32D3A7AC403C190 /* tif_lzw.c in Sources */ = {isa = PBXBuildFile; fileRef = 62FE89D87AD1B6A8F6D5E448 /* tif_lzw.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		B59B858CBA3BCCDCC9D4F40E /* tif_fax3sm.c in Sources */ = {isa = PBXBuildFile; fileRef = 916CB0D47B2A88D132DB0E8A /* tif_fax3sm.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		BA08286A3C84FE46CE2C6870 /* tif_write.c in Sources */ = {isa = PBXBuildFile; fileRef = E6237E23127279758A40926A /* tif_write.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		BA3164801788F7DA13ACE575 /* LICENSE.md in Resources */ = {isa = PBXBuildFile; fileRef = E7E81FDB5A6DEBD2A77CF993 /* LICENSE.md */; };
+		BB7957A50CA34C8DB5AE8C5E /* tif_packbits.c in Sources */ = {isa = PBXBuildFile; fileRef = 463E122E0ECC4D9BFD08CA03 /* tif_packbits.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		BF53F6AFA60603898FAC6D20 /* tif_next.c in Sources */ = {isa = PBXBuildFile; fileRef = 641AE3685DA6640202940E28 /* tif_next.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		C0607DCDA4883267A2AB386F /* tif_read.c in Sources */ = {isa = PBXBuildFile; fileRef = 590BD0D341774CF0B0132146 /* tif_read.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		C191B143C97B11EE6124411B /* tif_unix.c in Sources */ = {isa = PBXBuildFile; fileRef = 905DEEADD6F5936F782CAB2B /* tif_unix.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		C2431AA95748912B03666160 /* tif_hash_set.c in Sources */ = {isa = PBXBuildFile; fileRef = 8360BD8A65595ECC66187CB1 /* tif_hash_set.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		C36632A3510FEB4AA049EA44 /* TFNExposureRange.m in Sources */ = {isa = PBXBuildFile; fileRef = 247429A7083AACB02C275C30 /* TFNExposureRange.m */; };
+		C5C06A3770D42657ECE3DBA3 /* tif_dirinfo.c in Sources */ = {isa = PBXBuildFile; fileRef = 6A37B3D980D0B790CB88FE79 /* tif_dirinfo.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		C7C939201384C862378FC2F0 /* TFNTIFFReader.m in Sources */ = {isa = PBXBuildFile; fileRef = AA748C5793430A64C0319BEA /* TFNTIFFReader.m */; };
+		D013C529CF018DA83DF9C5F4 /* tif_version.c in Sources */ = {isa = PBXBuildFile; fileRef = DE042E9BBCAFD91CB21BE995 /* tif_version.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		D026A5099B2BA0F18D55E034 /* tif_write.c in Sources */ = {isa = PBXBuildFile; fileRef = E6237E23127279758A40926A /* tif_write.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		D09C71537D492352036782C1 /* tif_dumpmode.c in Sources */ = {isa = PBXBuildFile; fileRef = 5186CEC3EDA828F0592DE86C /* tif_dumpmode.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		D12144EDD44018B5E56EB498 /* tif_color.c in Sources */ = {isa = PBXBuildFile; fileRef = A4E0F0E8B22F974D40337487 /* tif_color.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		D7844737915DCFCD01A79762 /* TFNTestFixtures.m in Sources */ = {isa = PBXBuildFile; fileRef = B4C9B726CB0FADF1FB259824 /* TFNTestFixtures.m */; };
+		D946D03E536ED3C1DEF58311 /* tif_luv.c in Sources */ = {isa = PBXBuildFile; fileRef = A4A80FCDDBE128012D7DFE56 /* tif_luv.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		DC48D9248D0B4445952EF34D /* TFNEdgeCaseTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 96B6EA79B902F311B808BDA1 /* TFNEdgeCaseTests.m */; };
+		DE5352F5D06130573CF7EB0B /* TFNMetalNormalizer.m in Sources */ = {isa = PBXBuildFile; fileRef = E154D608778D55D1AD4D8EFB /* TFNMetalNormalizer.m */; };
+		E195239C03E3752C07502FD3 /* TFNTIFFReaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A742A7D782A5A8F8561C63C /* TFNTIFFReaderTests.m */; };
+		E22C1A108AAA146A97B1B556 /* tif_print.c in Sources */ = {isa = PBXBuildFile; fileRef = 31DBA7746590E2E9078F9AD3 /* tif_print.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		E2904341DA3B631CE177ED6E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 7744BDEFDD3BAF61786D9223 /* main.m */; };
+		E570EDECA8768C06BA343DA7 /* tif_error.c in Sources */ = {isa = PBXBuildFile; fileRef = 2275C7A66D66361E103B8A7C /* tif_error.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		E7163EB6AB10DBE5B7C90766 /* tif_dirinfo.c in Sources */ = {isa = PBXBuildFile; fileRef = 6A37B3D980D0B790CB88FE79 /* tif_dirinfo.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		EEAF2920F70A18CC89CB0153 /* tif_zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 1051C7D861756B28A8C0467F /* tif_zip.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		F0B5AF5E5246619F51905DC8 /* TFNEndToEndTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B54FF1E57E0343ABF7C266C4 /* TFNEndToEndTests.m */; };
+		F4A770FBF28DBB5D73128CB3 /* TFNTIFFWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1612952C377B137E1DB62125 /* TFNTIFFWriter.m */; };
+		F62C32BF43F3BC6A12FAAE2C /* tif_tile.c in Sources */ = {isa = PBXBuildFile; fileRef = A7538D919EBAB1ECFDCDB1FE /* tif_tile.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		F87936A3348CA21E595BC646 /* tif_warning.c in Sources */ = {isa = PBXBuildFile; fileRef = E56052C3DC053FB47FF6B217 /* tif_warning.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		FBCE55C36566A324F9EA01BB /* TFNNormalizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 5A8730CDBA8FE6CF12E5857B /* TFNNormalizer.m */; };
+		FCE9442ED176EDBBF706DE68 /* TFNCPUNormalizerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C735F9CBCD6EC26D0C6114 /* TFNCPUNormalizerTests.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		07CDC32784D11A9B5E888426 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0E35632E371D174D58400C96 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4F750F12AF9D418C5DDC9A7B;
+			remoteInfo = tiffen;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		00E398D33D331D78C8577B9C /* TFNTIFFWriterTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TFNTIFFWriterTests.m; sourceTree = "<group>"; };
+		042EB75368134DFE0FABDB1A /* tif_fax3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tif_fax3.h; sourceTree = "<group>"; };
+		1051C7D861756B28A8C0467F /* tif_zip.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_zip.c; sourceTree = "<group>"; };
+		1612952C377B137E1DB62125 /* TFNTIFFWriter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TFNTIFFWriter.m; sourceTree = "<group>"; };
+		1C9896ADEE8403A719D8C154 /* tiffenTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = tiffenTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		213976CB1880ECB49F3B14FD /* tif_compress.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_compress.c; sourceTree = "<group>"; };
+		2275C7A66D66361E103B8A7C /* tif_error.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_error.c; sourceTree = "<group>"; };
+		247429A7083AACB02C275C30 /* TFNExposureRange.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TFNExposureRange.m; sourceTree = "<group>"; };
+		25BEE505FBA8804F4795B26F /* tiffen */ = {isa = PBXFileReference; includeInIndex = 0; path = tiffen; sourceTree = BUILT_PRODUCTS_DIR; };
+		25D6638BF0773939E984BA4F /* tif_flush.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_flush.c; sourceTree = "<group>"; };
+		27C735F9CBCD6EC26D0C6114 /* TFNCPUNormalizerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TFNCPUNormalizerTests.m; sourceTree = "<group>"; };
+		28636B9D976DA6F262DA2583 /* TFNCPUNormalizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TFNCPUNormalizer.h; sourceTree = "<group>"; };
+		31DBA7746590E2E9078F9AD3 /* tif_print.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_print.c; sourceTree = "<group>"; };
+		37B481EEA8DEB2F882693410 /* tif_config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tif_config.h; sourceTree = "<group>"; };
+		3B23C0C92FDAE7E1AB77331E /* tif_dir.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tif_dir.h; sourceTree = "<group>"; };
+		463A10AC105021FC33F01DC1 /* tif_dirread.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_dirread.c; sourceTree = "<group>"; };
+		463E122E0ECC4D9BFD08CA03 /* tif_packbits.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_packbits.c; sourceTree = "<group>"; };
+		48FEC890958F5D49C063F1D5 /* tif_predict.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_predict.c; sourceTree = "<group>"; };
+		496EFC1C7BBD657D1708FD27 /* TFNCLITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TFNCLITests.m; sourceTree = "<group>"; };
+		4EF74B7B9B74CA4D694CCCD0 /* TFNNormalizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TFNNormalizer.h; sourceTree = "<group>"; };
+		4F264220DD2271D3AD7ADB35 /* tif_fax3.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_fax3.c; sourceTree = "<group>"; };
+		5186CEC3EDA828F0592DE86C /* tif_dumpmode.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_dumpmode.c; sourceTree = "<group>"; };
+		57AB6E633EBCACC5AACD47AE /* tif_strip.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_strip.c; sourceTree = "<group>"; };
+		58D0F9AEF5D0BC254765C165 /* TFNCPUNormalizer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TFNCPUNormalizer.m; sourceTree = "<group>"; };
+		590BD0D341774CF0B0132146 /* tif_read.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_read.c; sourceTree = "<group>"; };
+		5A8730CDBA8FE6CF12E5857B /* TFNNormalizer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TFNNormalizer.m; sourceTree = "<group>"; };
+		5E9C70445AC7C3E502740169 /* tif_extension.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_extension.c; sourceTree = "<group>"; };
+		62FE89D87AD1B6A8F6D5E448 /* tif_lzw.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_lzw.c; sourceTree = "<group>"; };
+		641AE3685DA6640202940E28 /* tif_next.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_next.c; sourceTree = "<group>"; };
+		6A37B3D980D0B790CB88FE79 /* tif_dirinfo.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_dirinfo.c; sourceTree = "<group>"; };
+		6EB6E60F9B8352207BA5AC06 /* tiffvers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tiffvers.h; sourceTree = "<group>"; };
+		72C808DF6CEB4CEC341BC55F /* tif_codec.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_codec.c; sourceTree = "<group>"; };
+		741F06D02BC8111913F97A03 /* tif_dir.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_dir.c; sourceTree = "<group>"; };
+		7744BDEFDD3BAF61786D9223 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		7A742A7D782A5A8F8561C63C /* TFNTIFFReaderTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TFNTIFFReaderTests.m; sourceTree = "<group>"; };
+		8360BD8A65595ECC66187CB1 /* tif_hash_set.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_hash_set.c; sourceTree = "<group>"; };
+		89C4E41375518D4B224A9F62 /* TFNExposureRange.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TFNExposureRange.h; sourceTree = "<group>"; };
+		905DEEADD6F5936F782CAB2B /* tif_unix.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_unix.c; sourceTree = "<group>"; };
+		916CB0D47B2A88D132DB0E8A /* tif_fax3sm.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_fax3sm.c; sourceTree = "<group>"; };
+		91A7D4D76E84F83BE4ED2CF3 /* t4.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = t4.h; sourceTree = "<group>"; };
+		96B6EA79B902F311B808BDA1 /* TFNEdgeCaseTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TFNEdgeCaseTests.m; sourceTree = "<group>"; };
+		96CCB84DCFD022E768CE86C0 /* tif_open.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_open.c; sourceTree = "<group>"; };
+		97D218DDDFC97ABC7879A99B /* tif_hash_set.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tif_hash_set.h; sourceTree = "<group>"; };
+		A0727E37B0D9131B4EC9DE52 /* TFNTIFFReader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TFNTIFFReader.h; sourceTree = "<group>"; };
+		A4A80FCDDBE128012D7DFE56 /* tif_luv.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_luv.c; sourceTree = "<group>"; };
+		A4E0F0E8B22F974D40337487 /* tif_color.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_color.c; sourceTree = "<group>"; };
+		A7538D919EBAB1ECFDCDB1FE /* tif_tile.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_tile.c; sourceTree = "<group>"; };
+		A9D2C34D52EB7D8373A3D89C /* TFNMetalNormalizerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TFNMetalNormalizerTests.m; sourceTree = "<group>"; };
+		AA748C5793430A64C0319BEA /* TFNTIFFReader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TFNTIFFReader.m; sourceTree = "<group>"; };
+		AAA964AD8D45C19736CC338F /* tiffio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tiffio.h; sourceTree = "<group>"; };
+		ADE667F3581BFDCA2F71A31E /* tif_dirwrite.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_dirwrite.c; sourceTree = "<group>"; };
+		B135BF126BD8B2FD96386B66 /* uvcode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = uvcode.h; sourceTree = "<group>"; };
+		B4C9B726CB0FADF1FB259824 /* TFNTestFixtures.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TFNTestFixtures.m; sourceTree = "<group>"; };
+		B54FF1E57E0343ABF7C266C4 /* TFNEndToEndTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TFNEndToEndTests.m; sourceTree = "<group>"; };
+		BCE11E8F31955F9959539D7C /* tiff.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tiff.h; sourceTree = "<group>"; };
+		BE422AC1188FCA2DD6352E52 /* TFNTestFixtures.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TFNTestFixtures.h; sourceTree = "<group>"; };
+		BFDD2BAE39D9E9F52449D695 /* tiffiop.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tiffiop.h; sourceTree = "<group>"; };
+		C64D13EE89D0984B0497FE64 /* TFNMetalNormalizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TFNMetalNormalizer.h; sourceTree = "<group>"; };
+		C7C3B045488F4772C110E053 /* TFNProgressTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TFNProgressTests.m; sourceTree = "<group>"; };
+		D3D5B403FDB52B74DA7EB5EC /* tiffconf.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tiffconf.h; sourceTree = "<group>"; };
+		D63D32C21DF4982CB2C572AB /* tif_swab.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_swab.c; sourceTree = "<group>"; };
+		DE042E9BBCAFD91CB21BE995 /* tif_version.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_version.c; sourceTree = "<group>"; };
+		E154D608778D55D1AD4D8EFB /* TFNMetalNormalizer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TFNMetalNormalizer.m; sourceTree = "<group>"; };
+		E155FE573354FA9FBD965C76 /* TFNExposureRangeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TFNExposureRangeTests.m; sourceTree = "<group>"; };
+		E369D7E60D329C13E4828602 /* tif_close.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_close.c; sourceTree = "<group>"; };
+		E56052C3DC053FB47FF6B217 /* tif_warning.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_warning.c; sourceTree = "<group>"; };
+		E600813D2EE7779BD34B5EE0 /* tif_getimage.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_getimage.c; sourceTree = "<group>"; };
+		E6237E23127279758A40926A /* tif_write.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_write.c; sourceTree = "<group>"; };
+		E7E81FDB5A6DEBD2A77CF993 /* LICENSE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
+		EA2DFD2A99BF438C4D47F7E9 /* tif_aux.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_aux.c; sourceTree = "<group>"; };
+		EC6067A0A80D68276F981F90 /* TFNInPlaceTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TFNInPlaceTests.m; sourceTree = "<group>"; };
+		ED8D67B5D755A6901FBBE5DA /* TFNTIFFWriter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TFNTIFFWriter.h; sourceTree = "<group>"; };
+		F069776D33147F5E5D95DD80 /* tif_predict.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tif_predict.h; sourceTree = "<group>"; };
+		F476A0605569E2951A4FB09E /* tif_thunder.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tif_thunder.c; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		1F8EEC469AB0443013496E57 /* unit */ = {
+			isa = PBXGroup;
+			children = (
+				27C735F9CBCD6EC26D0C6114 /* TFNCPUNormalizerTests.m */,
+				E155FE573354FA9FBD965C76 /* TFNExposureRangeTests.m */,
+				A9D2C34D52EB7D8373A3D89C /* TFNMetalNormalizerTests.m */,
+				7A742A7D782A5A8F8561C63C /* TFNTIFFReaderTests.m */,
+				00E398D33D331D78C8577B9C /* TFNTIFFWriterTests.m */,
+			);
+			path = unit;
+			sourceTree = "<group>";
+		};
+		3E7CB8E649774018C49E33A4 /* libtiff */ = {
+			isa = PBXGroup;
+			children = (
+				E7E81FDB5A6DEBD2A77CF993 /* LICENSE.md */,
+				91A7D4D76E84F83BE4ED2CF3 /* t4.h */,
+				EA2DFD2A99BF438C4D47F7E9 /* tif_aux.c */,
+				E369D7E60D329C13E4828602 /* tif_close.c */,
+				72C808DF6CEB4CEC341BC55F /* tif_codec.c */,
+				A4E0F0E8B22F974D40337487 /* tif_color.c */,
+				213976CB1880ECB49F3B14FD /* tif_compress.c */,
+				37B481EEA8DEB2F882693410 /* tif_config.h */,
+				741F06D02BC8111913F97A03 /* tif_dir.c */,
+				3B23C0C92FDAE7E1AB77331E /* tif_dir.h */,
+				6A37B3D980D0B790CB88FE79 /* tif_dirinfo.c */,
+				463A10AC105021FC33F01DC1 /* tif_dirread.c */,
+				ADE667F3581BFDCA2F71A31E /* tif_dirwrite.c */,
+				5186CEC3EDA828F0592DE86C /* tif_dumpmode.c */,
+				2275C7A66D66361E103B8A7C /* tif_error.c */,
+				5E9C70445AC7C3E502740169 /* tif_extension.c */,
+				4F264220DD2271D3AD7ADB35 /* tif_fax3.c */,
+				042EB75368134DFE0FABDB1A /* tif_fax3.h */,
+				916CB0D47B2A88D132DB0E8A /* tif_fax3sm.c */,
+				25D6638BF0773939E984BA4F /* tif_flush.c */,
+				E600813D2EE7779BD34B5EE0 /* tif_getimage.c */,
+				8360BD8A65595ECC66187CB1 /* tif_hash_set.c */,
+				97D218DDDFC97ABC7879A99B /* tif_hash_set.h */,
+				A4A80FCDDBE128012D7DFE56 /* tif_luv.c */,
+				62FE89D87AD1B6A8F6D5E448 /* tif_lzw.c */,
+				641AE3685DA6640202940E28 /* tif_next.c */,
+				96CCB84DCFD022E768CE86C0 /* tif_open.c */,
+				463E122E0ECC4D9BFD08CA03 /* tif_packbits.c */,
+				48FEC890958F5D49C063F1D5 /* tif_predict.c */,
+				F069776D33147F5E5D95DD80 /* tif_predict.h */,
+				31DBA7746590E2E9078F9AD3 /* tif_print.c */,
+				590BD0D341774CF0B0132146 /* tif_read.c */,
+				57AB6E633EBCACC5AACD47AE /* tif_strip.c */,
+				D63D32C21DF4982CB2C572AB /* tif_swab.c */,
+				F476A0605569E2951A4FB09E /* tif_thunder.c */,
+				A7538D919EBAB1ECFDCDB1FE /* tif_tile.c */,
+				905DEEADD6F5936F782CAB2B /* tif_unix.c */,
+				DE042E9BBCAFD91CB21BE995 /* tif_version.c */,
+				E56052C3DC053FB47FF6B217 /* tif_warning.c */,
+				E6237E23127279758A40926A /* tif_write.c */,
+				1051C7D861756B28A8C0467F /* tif_zip.c */,
+				BCE11E8F31955F9959539D7C /* tiff.h */,
+				D3D5B403FDB52B74DA7EB5EC /* tiffconf.h */,
+				AAA964AD8D45C19736CC338F /* tiffio.h */,
+				BFDD2BAE39D9E9F52449D695 /* tiffiop.h */,
+				6EB6E60F9B8352207BA5AC06 /* tiffvers.h */,
+				B135BF126BD8B2FD96386B66 /* uvcode.h */,
+			);
+			name = libtiff;
+			path = vendor/libtiff;
+			sourceTree = "<group>";
+		};
+		3EB2CF22CCAFF2B6EFAA749E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				25BEE505FBA8804F4795B26F /* tiffen */,
+				1C9896ADEE8403A719D8C154 /* tiffenTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		4C5FC598A28A33794CBB8470 /* tests */ = {
+			isa = PBXGroup;
+			children = (
+				BE422AC1188FCA2DD6352E52 /* TFNTestFixtures.h */,
+				B4C9B726CB0FADF1FB259824 /* TFNTestFixtures.m */,
+				681B0E478207BBBBBD036AB9 /* integration */,
+				1F8EEC469AB0443013496E57 /* unit */,
+			);
+			path = tests;
+			sourceTree = "<group>";
+		};
+		681B0E478207BBBBBD036AB9 /* integration */ = {
+			isa = PBXGroup;
+			children = (
+				496EFC1C7BBD657D1708FD27 /* TFNCLITests.m */,
+				96B6EA79B902F311B808BDA1 /* TFNEdgeCaseTests.m */,
+				B54FF1E57E0343ABF7C266C4 /* TFNEndToEndTests.m */,
+				EC6067A0A80D68276F981F90 /* TFNInPlaceTests.m */,
+				C7C3B045488F4772C110E053 /* TFNProgressTests.m */,
+			);
+			path = integration;
+			sourceTree = "<group>";
+		};
+		B5ABB7A7DF1EDC33A7106FA6 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				7744BDEFDD3BAF61786D9223 /* main.m */,
+				28636B9D976DA6F262DA2583 /* TFNCPUNormalizer.h */,
+				58D0F9AEF5D0BC254765C165 /* TFNCPUNormalizer.m */,
+				89C4E41375518D4B224A9F62 /* TFNExposureRange.h */,
+				247429A7083AACB02C275C30 /* TFNExposureRange.m */,
+				C64D13EE89D0984B0497FE64 /* TFNMetalNormalizer.h */,
+				E154D608778D55D1AD4D8EFB /* TFNMetalNormalizer.m */,
+				4EF74B7B9B74CA4D694CCCD0 /* TFNNormalizer.h */,
+				5A8730CDBA8FE6CF12E5857B /* TFNNormalizer.m */,
+				A0727E37B0D9131B4EC9DE52 /* TFNTIFFReader.h */,
+				AA748C5793430A64C0319BEA /* TFNTIFFReader.m */,
+				ED8D67B5D755A6901FBBE5DA /* TFNTIFFWriter.h */,
+				1612952C377B137E1DB62125 /* TFNTIFFWriter.m */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		C46C5075D9BFCA26664908AB = {
+			isa = PBXGroup;
+			children = (
+				3E7CB8E649774018C49E33A4 /* libtiff */,
+				B5ABB7A7DF1EDC33A7106FA6 /* src */,
+				4C5FC598A28A33794CBB8470 /* tests */,
+				3EB2CF22CCAFF2B6EFAA749E /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1E626B4FB5936450FDDAD6D5 /* tiffenTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 34AAFB46122FAE4B140FBF17 /* Build configuration list for PBXNativeTarget "tiffenTests" */;
+			buildPhases = (
+				4F58F4847A488AE0F23CB202 /* Sources */,
+				86C9FCD1C745717754E7D0C3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A042DC18862BA53470DC5741 /* PBXTargetDependency */,
+			);
+			name = tiffenTests;
+			packageProductDependencies = (
+			);
+			productName = tiffenTests;
+			productReference = 1C9896ADEE8403A719D8C154 /* tiffenTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		4F750F12AF9D418C5DDC9A7B /* tiffen */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F3A4CFA5D5BF18413AAF5C46 /* Build configuration list for PBXNativeTarget "tiffen" */;
+			buildPhases = (
+				6D0AA73DFBAA4B27A398B012 /* Compile Metal Shaders */,
+				DC3E79A92FDB65C3136F39BC /* Sources */,
+				4BB6C7367857B7BC9FA8B396 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = tiffen;
+			packageProductDependencies = (
+			);
+			productName = tiffen;
+			productReference = 25BEE505FBA8804F4795B26F /* tiffen */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0E35632E371D174D58400C96 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = 813D1F6112C4065A3AF6A256 /* Build configuration list for PBXProject "tiffen" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = C46C5075D9BFCA26664908AB;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 3EB2CF22CCAFF2B6EFAA749E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				4F750F12AF9D418C5DDC9A7B /* tiffen */,
+				1E626B4FB5936450FDDAD6D5 /* tiffenTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		4BB6C7367857B7BC9FA8B396 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A284573F25A4AA523483C2FD /* LICENSE.md in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		86C9FCD1C745717754E7D0C3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BA3164801788F7DA13ACE575 /* LICENSE.md in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		6D0AA73DFBAA4B27A398B012 /* Compile Metal Shaders */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/src/Shaders/normalize.metal",
+			);
+			name = "Compile Metal Shaders";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/default.metallib",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\nMETAL_SOURCE=\"${SRCROOT}/src/Shaders/normalize.metal\"\nif [ -f \"$METAL_SOURCE\" ]; then\n  xcrun metal -c \"$METAL_SOURCE\" -o \"${DERIVED_FILE_DIR}/normalize.air\"\n  xcrun metallib \"${DERIVED_FILE_DIR}/normalize.air\" -o \"${BUILT_PRODUCTS_DIR}/default.metallib\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		4F58F4847A488AE0F23CB202 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D8154107F2548AA28D1B5F3 /* TFNCLITests.m in Sources */,
+				A13C60490AA03688B0E3E7B2 /* TFNCPUNormalizer.m in Sources */,
+				FCE9442ED176EDBBF706DE68 /* TFNCPUNormalizerTests.m in Sources */,
+				DC48D9248D0B4445952EF34D /* TFNEdgeCaseTests.m in Sources */,
+				F0B5AF5E5246619F51905DC8 /* TFNEndToEndTests.m in Sources */,
+				C36632A3510FEB4AA049EA44 /* TFNExposureRange.m in Sources */,
+				53E85B5138AEB0E3267759E8 /* TFNExposureRangeTests.m in Sources */,
+				07B225EF5A882D62287C671C /* TFNInPlaceTests.m in Sources */,
+				4F0B096F466339C0EA81F384 /* TFNMetalNormalizer.m in Sources */,
+				732C45A0B5B1421E02D0F6A7 /* TFNMetalNormalizerTests.m in Sources */,
+				0CFEE452D9D0F6AE212A32BF /* TFNNormalizer.m in Sources */,
+				6E882B841F42FCBF5928E417 /* TFNProgressTests.m in Sources */,
+				7D5A8FA9BC8EE36E45166EAB /* TFNTIFFReader.m in Sources */,
+				E195239C03E3752C07502FD3 /* TFNTIFFReaderTests.m in Sources */,
+				98C20B2EDB74E44A325709FF /* TFNTIFFWriter.m in Sources */,
+				A20A79A24CAE9151FC82A719 /* TFNTIFFWriterTests.m in Sources */,
+				D7844737915DCFCD01A79762 /* TFNTestFixtures.m in Sources */,
+				0D3471393DB812FB6890CDC1 /* tif_aux.c in Sources */,
+				6214962B891087AE8FE2E2B1 /* tif_close.c in Sources */,
+				0315B62014ABF28D608835A4 /* tif_codec.c in Sources */,
+				D12144EDD44018B5E56EB498 /* tif_color.c in Sources */,
+				33641AF2A1A1009D479FA209 /* tif_compress.c in Sources */,
+				3BAF79ADB247F34698B52643 /* tif_dir.c in Sources */,
+				C5C06A3770D42657ECE3DBA3 /* tif_dirinfo.c in Sources */,
+				7D912730F3C84A291DB24D1B /* tif_dirread.c in Sources */,
+				97DCCBBFD797006C705E18DE /* tif_dirwrite.c in Sources */,
+				D09C71537D492352036782C1 /* tif_dumpmode.c in Sources */,
+				583C0824EA6662B1B1CD9819 /* tif_error.c in Sources */,
+				1B2294243D1F7343BE9A17A9 /* tif_extension.c in Sources */,
+				113E2F2E4579420CBA7960F8 /* tif_fax3.c in Sources */,
+				B59B858CBA3BCCDCC9D4F40E /* tif_fax3sm.c in Sources */,
+				86C6E04C98303383F5D7AF9D /* tif_flush.c in Sources */,
+				8C0871C60F7217ED0954289E /* tif_getimage.c in Sources */,
+				C2431AA95748912B03666160 /* tif_hash_set.c in Sources */,
+				33F0343ADF9DFAEC01490A28 /* tif_luv.c in Sources */,
+				B36D7071B32D3A7AC403C190 /* tif_lzw.c in Sources */,
+				BF53F6AFA60603898FAC6D20 /* tif_next.c in Sources */,
+				3D771D733A39387708C08F2C /* tif_open.c in Sources */,
+				899EF759A3CEFDE60D4F5B5C /* tif_packbits.c in Sources */,
+				A8AB49ECF68E6D2DB181F245 /* tif_predict.c in Sources */,
+				E22C1A108AAA146A97B1B556 /* tif_print.c in Sources */,
+				699CC050918CD553C42A3BB0 /* tif_read.c in Sources */,
+				3E19CA0B213950FE7B000952 /* tif_strip.c in Sources */,
+				6C5AAFC93BD9135BB7EBDA12 /* tif_swab.c in Sources */,
+				B013E5D0F794A6D6772AC503 /* tif_thunder.c in Sources */,
+				F62C32BF43F3BC6A12FAAE2C /* tif_tile.c in Sources */,
+				C191B143C97B11EE6124411B /* tif_unix.c in Sources */,
+				D013C529CF018DA83DF9C5F4 /* tif_version.c in Sources */,
+				B33C78E11F11AD5576B5DC89 /* tif_warning.c in Sources */,
+				D026A5099B2BA0F18D55E034 /* tif_write.c in Sources */,
+				4036F3019BEC3A46072AB17E /* tif_zip.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DC3E79A92FDB65C3136F39BC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				94E9E4CA3B92BB2373C8039F /* TFNCPUNormalizer.m in Sources */,
+				3DDD31106674C925084D02FD /* TFNExposureRange.m in Sources */,
+				DE5352F5D06130573CF7EB0B /* TFNMetalNormalizer.m in Sources */,
+				FBCE55C36566A324F9EA01BB /* TFNNormalizer.m in Sources */,
+				C7C939201384C862378FC2F0 /* TFNTIFFReader.m in Sources */,
+				F4A770FBF28DBB5D73128CB3 /* TFNTIFFWriter.m in Sources */,
+				E2904341DA3B631CE177ED6E /* main.m in Sources */,
+				39BED7C937E0D60FB8B8FBC1 /* tif_aux.c in Sources */,
+				5E64DB43A08EA26A8B8C6B26 /* tif_close.c in Sources */,
+				22DF87B54E5FDDBBEDDC17E1 /* tif_codec.c in Sources */,
+				297D64E1B49DA002473A3697 /* tif_color.c in Sources */,
+				9F7CB6BFA2D94C85599759FA /* tif_compress.c in Sources */,
+				71C3E7417A52BF6F40E148EC /* tif_dir.c in Sources */,
+				E7163EB6AB10DBE5B7C90766 /* tif_dirinfo.c in Sources */,
+				5E6E6A70F1689F967D602A76 /* tif_dirread.c in Sources */,
+				6722816F6CE8867822336816 /* tif_dirwrite.c in Sources */,
+				4C799F15E9A6E85402859E94 /* tif_dumpmode.c in Sources */,
+				E570EDECA8768C06BA343DA7 /* tif_error.c in Sources */,
+				9E8AC0B1FDC51BF4F4C11442 /* tif_extension.c in Sources */,
+				0372EBD91E27414B999CD563 /* tif_fax3.c in Sources */,
+				4071500C99B70A7EEE2AE46E /* tif_fax3sm.c in Sources */,
+				427B757F1AD42B02E9190911 /* tif_flush.c in Sources */,
+				64768E2047D75B86C9966397 /* tif_getimage.c in Sources */,
+				85922E96217B5EB1F79C71A9 /* tif_hash_set.c in Sources */,
+				D946D03E536ED3C1DEF58311 /* tif_luv.c in Sources */,
+				A8CC252F3153171667379E74 /* tif_lzw.c in Sources */,
+				4BAC6A421502D2DBDEEBECAC /* tif_next.c in Sources */,
+				851D3DD71E58F4BE2CFA12F6 /* tif_open.c in Sources */,
+				BB7957A50CA34C8DB5AE8C5E /* tif_packbits.c in Sources */,
+				95A14215EB652FD76879EEAB /* tif_predict.c in Sources */,
+				8A10331A58A356E88EFFB04C /* tif_print.c in Sources */,
+				C0607DCDA4883267A2AB386F /* tif_read.c in Sources */,
+				15D81F7A4E2298B70ECEDF5E /* tif_strip.c in Sources */,
+				65E6A3B5A1620F34E86D0C21 /* tif_swab.c in Sources */,
+				B0DAB293A8720014C863672B /* tif_thunder.c in Sources */,
+				A2E4F9532DCCA11A304A3E05 /* tif_tile.c in Sources */,
+				A8A124E0E2E324DD31EEE08B /* tif_unix.c in Sources */,
+				0D73AF636FB98F95A8958605 /* tif_version.c in Sources */,
+				F87936A3348CA21E595BC646 /* tif_warning.c in Sources */,
+				BA08286A3C84FE46CE2C6870 /* tif_write.c in Sources */,
+				EEAF2920F70A18CC89CB0153 /* tif_zip.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A042DC18862BA53470DC5741 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4F750F12AF9D418C5DDC9A7B /* tiffen */;
+			targetProxy = 07CDC32784D11A9B5E888426 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		049B031925A21B3AE50D134C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		1EEC62498D6F20C7DBB37848 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"TIFFEN_VERSION=\\\"0.1.0\\\"",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/vendor/libtiff",
+					"$(SRCROOT)/src",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				OTHER_LDFLAGS = (
+					"-lz",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.tiffen.tiffenTests;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		49B234AE5D7E8E6C3FCDF343 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"TIFFEN_VERSION=\\\"0.1.0\\\"",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/vendor/libtiff",
+					"$(SRCROOT)/src",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				METAL_LIBRARY_OUTPUT_DIR = "$(BUILT_PRODUCTS_DIR)";
+				MTL_HEADER_SEARCH_PATHS = "$(SRCROOT)/src/Shaders";
+				OTHER_LDFLAGS = (
+					"-lz",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.tiffen.tiffen;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		8236F6A3DDABAA17AA5E411E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		E9632F880DEE26342BE86CC9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"TIFFEN_VERSION=\\\"0.1.0\\\"",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/vendor/libtiff",
+					"$(SRCROOT)/src",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				METAL_LIBRARY_OUTPUT_DIR = "$(BUILT_PRODUCTS_DIR)";
+				MTL_HEADER_SEARCH_PATHS = "$(SRCROOT)/src/Shaders";
+				OTHER_LDFLAGS = (
+					"-lz",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.tiffen.tiffen;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		EC5567B026C88461294F235E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"TIFFEN_VERSION=\\\"0.1.0\\\"",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/vendor/libtiff",
+					"$(SRCROOT)/src",
+				);
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				OTHER_LDFLAGS = (
+					"-lz",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.tiffen.tiffenTests;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		34AAFB46122FAE4B140FBF17 /* Build configuration list for PBXNativeTarget "tiffenTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EC5567B026C88461294F235E /* Debug */,
+				1EEC62498D6F20C7DBB37848 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		813D1F6112C4065A3AF6A256 /* Build configuration list for PBXProject "tiffen" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				049B031925A21B3AE50D134C /* Debug */,
+				8236F6A3DDABAA17AA5E411E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F3A4CFA5D5BF18413AAF5C46 /* Build configuration list for PBXNativeTarget "tiffen" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				49B234AE5D7E8E6C3FCDF343 /* Debug */,
+				E9632F880DEE26342BE86CC9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0E35632E371D174D58400C96 /* Project object */;
+}

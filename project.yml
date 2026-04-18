@@ -1,0 +1,80 @@
+name: tiffen
+options:
+  deploymentTarget:
+    macOS: "14.0"
+  xcodeVersion: "15.0"
+  minimumXcodeGenVersion: "2.35"
+  bundleIdPrefix: com.tiffen
+
+settings:
+  base:
+    MACOSX_DEPLOYMENT_TARGET: "14.0"
+    CLANG_ENABLE_OBJC_ARC: YES
+    GCC_WARN_UNINITIALIZED_AUTOS: YES_AGGRESSIVE
+    CLANG_WARN_DOCUMENTATION_COMMENTS: NO
+
+targets:
+  tiffen:
+    type: tool
+    platform: macOS
+    sources:
+      - path: src
+        excludes:
+          - "**/*.metal"
+      - path: vendor/libtiff
+        headerVisibility: project
+        compilerFlags:
+          - "-w"
+    settings:
+      base:
+        HEADER_SEARCH_PATHS:
+          - "$(SRCROOT)/vendor/libtiff"
+          - "$(SRCROOT)/src"
+        OTHER_LDFLAGS:
+          - "-lz"
+        MTL_HEADER_SEARCH_PATHS: "$(SRCROOT)/src/Shaders"
+        METAL_LIBRARY_OUTPUT_DIR: "$(BUILT_PRODUCTS_DIR)"
+        GCC_PREPROCESSOR_DEFINITIONS:
+          - "TIFFEN_VERSION=\\\"0.1.0\\\""
+    dependencies: []
+    preBuildScripts:
+      - name: Compile Metal Shaders
+        script: |
+          set -e
+          METAL_SOURCE="${SRCROOT}/src/Shaders/normalize.metal"
+          if [ -f "$METAL_SOURCE" ]; then
+            xcrun metal -c "$METAL_SOURCE" -o "${DERIVED_FILE_DIR}/normalize.air"
+            xcrun metallib "${DERIVED_FILE_DIR}/normalize.air" -o "${BUILT_PRODUCTS_DIR}/default.metallib"
+          fi
+        inputFiles:
+          - $(SRCROOT)/src/Shaders/normalize.metal
+        outputFiles:
+          - $(BUILT_PRODUCTS_DIR)/default.metallib
+
+  tiffenTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: tests
+      - path: src
+        excludes:
+          - "main.m"
+          - "**/*.metal"
+      - path: vendor/libtiff
+        headerVisibility: project
+        compilerFlags:
+          - "-w"
+    settings:
+      base:
+        HEADER_SEARCH_PATHS:
+          - "$(SRCROOT)/vendor/libtiff"
+          - "$(SRCROOT)/src"
+        OTHER_LDFLAGS:
+          - "-lz"
+        GENERATE_INFOPLIST_FILE: YES
+        GCC_PREPROCESSOR_DEFINITIONS:
+          - "TIFFEN_VERSION=\\\"0.1.0\\\""
+    dependencies:
+      - target: tiffen
+        embed: false
+        link: false
