@@ -111,4 +111,4 @@ Supports 8-bit, 16-bit, and 32-bit (integer and float) TIFF files.
 
 ## License
 
-All rights reserved.
+This project is licensed under the BSD 3-Clause License. See [LICENSE](LICENSE) for details.
