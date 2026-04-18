@@ -28,6 +28,8 @@ Thumbs.db
 *.d
 *.a
 *.dylib
+*.profraw
+*.profdata
 
 # IDE
 .vscode/
