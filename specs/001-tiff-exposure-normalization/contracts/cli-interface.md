@@ -1,0 +1,72 @@
+# CLI Interface Contract: tiffen
+
+## Synopsis
+
+```
+tiffen <base-tiff> <input-directory> [options]
+```
+
+## Arguments
+
+| Argument | Required | Description |
+|----------|----------|-------------|
+| `<base-tiff>` | Yes | Path to the reference TIFF file whose exposure range all others will match |
+| `<input-directory>` | Yes | Path to directory containing TIFF files to normalize |
+
+## Options
+
+| Option | Short | Default | Description |
+|--------|-------|---------|-------------|
+| `--output <dir>` | `-o` | `<input-directory>/normalized/` | Output directory for normalized files |
+| `--in-place` | | off | Overwrite original files instead of writing to output directory |
+| `--verbose` | `-v` | off | Print detailed progress for each file |
+| `--quiet` | `-q` | off | Suppress all stdout output except errors |
+| `--help` | `-h` | | Print usage information and exit |
+| `--version` | | | Print version and exit |
+
+## Exit Codes
+
+| Code | Meaning |
+|------|---------|
+| 0 | All files processed successfully |
+| 1 | One or more files failed (partial success, errors on stderr) |
+| 2 | Fatal error (invalid arguments, base TIFF unreadable, etc.) |
+
+## Output Behavior
+
+**stdout** (default mode):
+```
+Normalizing 47 files to match base: photo_001.tiff
+  [1/47] photo_002.tiff → normalized/photo_002.tiff
+  [2/47] photo_003.tiff → normalized/photo_003.tiff
+  ...
+  [46/47] photo_047.tiff → normalized/photo_047.tiff
+  Skipped: 1 (non-TIFF)
+
+Done: 46 normalized, 0 errors, 1 skipped
+```
+
+**stderr** (errors):
+```
+Error: photo_025.tiff: corrupt TIFF header (skipping)
+```
+
+**`--in-place` mode**:
+```
+Normalizing 47 files to match base: photo_001.tiff (in-place)
+  [1/47] photo_002.tiff (overwritten)
+  ...
+```
+
+## Constraints
+
+- `--in-place` and `--output` are mutually exclusive (error if both provided, exit code 2)
+- `--verbose` and `--quiet` are mutually exclusive (error if both provided, exit code 2)
+- `<base-tiff>` MUST exist and be a valid TIFF (exit code 2 if not)
+- `<input-directory>` MUST exist and be a directory (exit code 2 if not)
+- If `<base-tiff>` is inside `<input-directory>`, it is skipped during normalization
+
+## Warnings (stderr)
+
+- Flat exposure: when a target TIFF channel has `min == max`, a warning
+  is emitted: `Warning: photo.tiff: channel N has flat exposure (mapped to base_min)`

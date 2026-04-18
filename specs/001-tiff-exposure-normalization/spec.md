@@ -103,6 +103,10 @@ file is reported on stderr while valid files are normalized.
 - What happens when a TIFF has a different number of channels than
   the base? The tool MUST normalize per-channel exposure ranges
   independently.
+- What happens when a target TIFF has uniform pixel values (flat
+  exposure, min == max) on one or more channels? The tool MUST
+  map those channels to base_min, emit a warning on stderr, and
+  continue processing.
 
 ## Requirements *(mandatory)*
 
