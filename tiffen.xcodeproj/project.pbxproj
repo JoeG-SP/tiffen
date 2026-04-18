@@ -14,6 +14,7 @@
 		3FB4CF3BD7F4121C62C8A37F /* TFNTIFFReader.m in Sources */ = {isa = PBXBuildFile; fileRef = AA748C5793430A64C0319BEA /* TFNTIFFReader.m */; };
 		4CFA38A1224DE2444D0BF5F3 /* TFNTIFFWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = ED8D67B5D755A6901FBBE5DA /* TFNTIFFWriter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		505A13BD2B3524430D41FF74 /* TFNCPUNormalizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 28636B9D976DA6F262DA2583 /* TFNCPUNormalizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		536D6C7AE363A1BAA6501D6A /* TFNHistogramGPUTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D2C92BEA4C49E64B470DBB2D /* TFNHistogramGPUTests.m */; };
 		53E85B5138AEB0E3267759E8 /* TFNExposureRangeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E155FE573354FA9FBD965C76 /* TFNExposureRangeTests.m */; };
 		5A43FCD4E846846B5E82151B /* TFNNormalizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4EF74B7B9B74CA4D694CCCD0 /* TFNNormalizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6505653477F6262A31DE7C28 /* TFNTIFFWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1612952C377B137E1DB62125 /* TFNTIFFWriter.m */; };
@@ -23,13 +24,17 @@
 		7652AB6CD1B2DE05A2CE5942 /* TiffenCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67DCB1E20C296AEF1FB2AF51 /* TiffenCore.framework */; };
 		A20A79A24CAE9151FC82A719 /* TFNTIFFWriterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E398D33D331D78C8577B9C /* TFNTIFFWriterTests.m */; };
 		A27AF6DDDCEB5668E2BB58BE /* TFNMetalNormalizer.m in Sources */ = {isa = PBXBuildFile; fileRef = E154D608778D55D1AD4D8EFB /* TFNMetalNormalizer.m */; };
+		AEE43981D8FFB9CD343F0997 /* TFNHistogramData.h in Headers */ = {isa = PBXBuildFile; fileRef = A8D1F8E059E38DA7EC8105C8 /* TFNHistogramData.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B3DCC2E7D43A16F4581FE901 /* TFNTIFFReader.h in Headers */ = {isa = PBXBuildFile; fileRef = A0727E37B0D9131B4EC9DE52 /* TFNTIFFReader.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C14CD9E856AF8519ABEF22A1 /* TFNHistogramData.m in Sources */ = {isa = PBXBuildFile; fileRef = F9D5127BBC3968440B9823B9 /* TFNHistogramData.m */; };
 		C18A668DC6005231BE38ACD7 /* TFNExposureRange.m in Sources */ = {isa = PBXBuildFile; fileRef = 247429A7083AACB02C275C30 /* TFNExposureRange.m */; };
 		D1085D092CE9E71F99560ADF /* TiffenCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 38F46E5DAEF6E5F7511838A0 /* TiffenCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D23810BA5240DFDEC29DD351 /* TFNHistogramBitDepthTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 65187B140D221C69043039C7 /* TFNHistogramBitDepthTests.m */; };
 		D7844737915DCFCD01A79762 /* TFNTestFixtures.m in Sources */ = {isa = PBXBuildFile; fileRef = B4C9B726CB0FADF1FB259824 /* TFNTestFixtures.m */; };
 		D7FB32901096FAC13806BB9E /* TiffenCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67DCB1E20C296AEF1FB2AF51 /* TiffenCore.framework */; };
 		DB935E5716B39B97D8FBDFCB /* TiffenCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 67DCB1E20C296AEF1FB2AF51 /* TiffenCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		DC48D9248D0B4445952EF34D /* TFNEdgeCaseTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 96B6EA79B902F311B808BDA1 /* TFNEdgeCaseTests.m */; };
+		DE0ECB82DF17504CA6E608B4 /* TFNHistogramDataTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B1DB80F772303A6D8D8E36BD /* TFNHistogramDataTests.m */; };
 		DE2EF3760EEEB1046C9F7530 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C9067B62A41CB090A4627987 /* main.m */; };
 		E195239C03E3752C07502FD3 /* TFNTIFFReaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A742A7D782A5A8F8561C63C /* TFNTIFFReaderTests.m */; };
 		ED1AF15C3EBF096D3D32D385 /* TFNMetalNormalizer.h in Headers */ = {isa = PBXBuildFile; fileRef = C64D13EE89D0984B0497FE64 /* TFNMetalNormalizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -101,24 +106,29 @@
 		4EF74B7B9B74CA4D694CCCD0 /* TFNNormalizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TFNNormalizer.h; sourceTree = "<group>"; };
 		58D0F9AEF5D0BC254765C165 /* TFNCPUNormalizer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TFNCPUNormalizer.m; sourceTree = "<group>"; };
 		5A8730CDBA8FE6CF12E5857B /* TFNNormalizer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TFNNormalizer.m; sourceTree = "<group>"; };
+		65187B140D221C69043039C7 /* TFNHistogramBitDepthTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TFNHistogramBitDepthTests.m; sourceTree = "<group>"; };
 		67DCB1E20C296AEF1FB2AF51 /* TiffenCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TiffenCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A742A7D782A5A8F8561C63C /* TFNTIFFReaderTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TFNTIFFReaderTests.m; sourceTree = "<group>"; };
 		89C4E41375518D4B224A9F62 /* TFNExposureRange.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TFNExposureRange.h; sourceTree = "<group>"; };
 		96B6EA79B902F311B808BDA1 /* TFNEdgeCaseTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TFNEdgeCaseTests.m; sourceTree = "<group>"; };
 		A0727E37B0D9131B4EC9DE52 /* TFNTIFFReader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TFNTIFFReader.h; sourceTree = "<group>"; };
+		A8D1F8E059E38DA7EC8105C8 /* TFNHistogramData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TFNHistogramData.h; sourceTree = "<group>"; };
 		A9D2C34D52EB7D8373A3D89C /* TFNMetalNormalizerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TFNMetalNormalizerTests.m; sourceTree = "<group>"; };
 		AA748C5793430A64C0319BEA /* TFNTIFFReader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TFNTIFFReader.m; sourceTree = "<group>"; };
 		ACBBA609532C3E411943B220 /* tiffenApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = tiffenApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B1DB80F772303A6D8D8E36BD /* TFNHistogramDataTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TFNHistogramDataTests.m; sourceTree = "<group>"; };
 		B4C9B726CB0FADF1FB259824 /* TFNTestFixtures.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TFNTestFixtures.m; sourceTree = "<group>"; };
 		B54FF1E57E0343ABF7C266C4 /* TFNEndToEndTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TFNEndToEndTests.m; sourceTree = "<group>"; };
 		BE422AC1188FCA2DD6352E52 /* TFNTestFixtures.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TFNTestFixtures.h; sourceTree = "<group>"; };
 		C64D13EE89D0984B0497FE64 /* TFNMetalNormalizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TFNMetalNormalizer.h; sourceTree = "<group>"; };
 		C7C3B045488F4772C110E053 /* TFNProgressTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TFNProgressTests.m; sourceTree = "<group>"; };
 		C9067B62A41CB090A4627987 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		D2C92BEA4C49E64B470DBB2D /* TFNHistogramGPUTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TFNHistogramGPUTests.m; sourceTree = "<group>"; };
 		E154D608778D55D1AD4D8EFB /* TFNMetalNormalizer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TFNMetalNormalizer.m; sourceTree = "<group>"; };
 		E155FE573354FA9FBD965C76 /* TFNExposureRangeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TFNExposureRangeTests.m; sourceTree = "<group>"; };
 		EC6067A0A80D68276F981F90 /* TFNInPlaceTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TFNInPlaceTests.m; sourceTree = "<group>"; };
 		ED8D67B5D755A6901FBBE5DA /* TFNTIFFWriter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TFNTIFFWriter.h; sourceTree = "<group>"; };
+		F9D5127BBC3968440B9823B9 /* TFNHistogramData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TFNHistogramData.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -154,6 +164,9 @@
 			children = (
 				27C735F9CBCD6EC26D0C6114 /* TFNCPUNormalizerTests.m */,
 				E155FE573354FA9FBD965C76 /* TFNExposureRangeTests.m */,
+				65187B140D221C69043039C7 /* TFNHistogramBitDepthTests.m */,
+				B1DB80F772303A6D8D8E36BD /* TFNHistogramDataTests.m */,
+				D2C92BEA4C49E64B470DBB2D /* TFNHistogramGPUTests.m */,
 				A9D2C34D52EB7D8373A3D89C /* TFNMetalNormalizerTests.m */,
 				7A742A7D782A5A8F8561C63C /* TFNTIFFReaderTests.m */,
 				00E398D33D331D78C8577B9C /* TFNTIFFWriterTests.m */,
@@ -202,6 +215,8 @@
 				58D0F9AEF5D0BC254765C165 /* TFNCPUNormalizer.m */,
 				89C4E41375518D4B224A9F62 /* TFNExposureRange.h */,
 				247429A7083AACB02C275C30 /* TFNExposureRange.m */,
+				A8D1F8E059E38DA7EC8105C8 /* TFNHistogramData.h */,
+				F9D5127BBC3968440B9823B9 /* TFNHistogramData.m */,
 				C64D13EE89D0984B0497FE64 /* TFNMetalNormalizer.h */,
 				E154D608778D55D1AD4D8EFB /* TFNMetalNormalizer.m */,
 				4EF74B7B9B74CA4D694CCCD0 /* TFNNormalizer.h */,
@@ -250,6 +265,7 @@
 			files = (
 				505A13BD2B3524430D41FF74 /* TFNCPUNormalizer.h in Headers */,
 				1759C972ED814F73D3C38F4A /* TFNExposureRange.h in Headers */,
+				AEE43981D8FFB9CD343F0997 /* TFNHistogramData.h in Headers */,
 				ED1AF15C3EBF096D3D32D385 /* TFNMetalNormalizer.h in Headers */,
 				5A43FCD4E846846B5E82151B /* TFNNormalizer.h in Headers */,
 				B3DCC2E7D43A16F4581FE901 /* TFNTIFFReader.h in Headers */,
@@ -402,6 +418,7 @@
 			files = (
 				F971D73C1367197E8EC1F014 /* TFNCPUNormalizer.m in Sources */,
 				C18A668DC6005231BE38ACD7 /* TFNExposureRange.m in Sources */,
+				C14CD9E856AF8519ABEF22A1 /* TFNHistogramData.m in Sources */,
 				A27AF6DDDCEB5668E2BB58BE /* TFNMetalNormalizer.m in Sources */,
 				2B7A76DBF20295BC9AD85E1D /* TFNNormalizer.m in Sources */,
 				3FB4CF3BD7F4121C62C8A37F /* TFNTIFFReader.m in Sources */,
@@ -418,6 +435,9 @@
 				DC48D9248D0B4445952EF34D /* TFNEdgeCaseTests.m in Sources */,
 				F0B5AF5E5246619F51905DC8 /* TFNEndToEndTests.m in Sources */,
 				53E85B5138AEB0E3267759E8 /* TFNExposureRangeTests.m in Sources */,
+				D23810BA5240DFDEC29DD351 /* TFNHistogramBitDepthTests.m in Sources */,
+				DE0ECB82DF17504CA6E608B4 /* TFNHistogramDataTests.m in Sources */,
+				536D6C7AE363A1BAA6501D6A /* TFNHistogramGPUTests.m in Sources */,
 				07B225EF5A882D62287C671C /* TFNInPlaceTests.m in Sources */,
 				732C45A0B5B1421E02D0F6A7 /* TFNMetalNormalizerTests.m in Sources */,
 				6E882B841F42FCBF5928E417 /* TFNProgressTests.m in Sources */,

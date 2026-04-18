@@ -31,25 +31,25 @@
 
 **⚠️ CRITICAL**: No GUI work can begin until this phase is complete.
 
-- [ ] T006 [US5] Verify framework public headers are importable: build CLI with `#import <TiffenCore/TFNNormalizer.h>` etc. and confirm no missing-header errors; add any result type headers (e.g., `TFNNormalizationResult.h`) missed in T003a
-- [ ] T007 [US5] Update `cli/main.m` to import TiffenCore framework headers (`#import <TiffenCore/TFNNormalizer.h>` etc.) instead of local includes
-- [ ] T008 [US5] Retarget existing tests in `tests/unit/` and `tests/integration/` to link against `TiffenCore` framework instead of compiling `src/` sources directly; update `project.yml` `tiffenTests` target accordingly
-- [ ] T009 [US5] Build CLI (`xcodebuild -scheme tiffen`) and run full test suite (`xcodebuild test -scheme tiffenTests`) to verify byte-identical output (SC-001)
-- [ ] T010 [P] [US5] Create `src/TFNHistogramData.h` and `src/TFNHistogramData.m` — model class with `bins` (float**), `channelCount`, `totalPixels` fields and `+histogramFromRawCounts:channelCount:totalPixels:` class method per data-model.md
-- [ ] T011 [US5] Add histogram `device uint*` buffer arguments to range kernel in `src/Shaders/normalize.metal` — atomic bin increment (`atomic_fetch_add_explicit`) fused into min/max reduction per research.md R3
-- [ ] T012 [US5] Add histogram `device uint*` buffer arguments to normalize kernel in `src/Shaders/normalize.metal` — atomic bin increment after writing output pixel per research.md R3
-- [ ] T013 [US5] Update `TFNMetalNormalizer.m` to allocate histogram `MTLBuffer` (channelCount * 256 * sizeof(uint32)), pass to range and normalize dispatches, and construct `TFNHistogramData` from raw counts after each pass
-- [ ] T014 [US5] Update `TFNCPUNormalizer.m` to compute histograms inline during range scan (before) and normalization loop (after), producing `TFNHistogramData` per data-model.md CPU fallback spec
-- [ ] T015 [US5] Expose before/after `TFNHistogramData` on normalization result returned by `TFNNormalizer` so consumers (CLI, GUI) can access them
-- [ ] T016 [US5] Add `TFNHistogramData.h` to framework public headers in `project.yml`
+- [x] T006 [US5] Verify framework public headers are importable: build CLI with `#import <TiffenCore/TFNNormalizer.h>` etc. and confirm no missing-header errors; add any result type headers (e.g., `TFNNormalizationResult.h`) missed in T003a
+- [x] T007 [US5] Update `cli/main.m` to import TiffenCore framework headers (`#import <TiffenCore/TFNNormalizer.h>` etc.) instead of local includes
+- [x] T008 [US5] Retarget existing tests in `tests/unit/` and `tests/integration/` to link against `TiffenCore` framework instead of compiling `src/` sources directly; update `project.yml` `tiffenTests` target accordingly
+- [x] T009 [US5] Build CLI (`xcodebuild -scheme tiffen`) and run full test suite (`xcodebuild test -scheme tiffenTests`) to verify byte-identical output (SC-001)
+- [x] T010 [P] [US5] Create `src/TFNHistogramData.h` and `src/TFNHistogramData.m` — model class with `bins` (float**), `channelCount`, `totalPixels` fields and `+histogramFromRawCounts:channelCount:totalPixels:` class method per data-model.md
+- [x] T011 [US5] Add histogram `device uint*` buffer arguments to range kernel in `src/Shaders/normalize.metal` — atomic bin increment (`atomic_fetch_add_explicit`) fused into min/max reduction per research.md R3
+- [x] T012 [US5] Add histogram `device uint*` buffer arguments to normalize kernel in `src/Shaders/normalize.metal` — atomic bin increment after writing output pixel per research.md R3
+- [x] T013 [US5] Update `TFNMetalNormalizer.m` to allocate histogram `MTLBuffer` (channelCount * 256 * sizeof(uint32)), pass to range and normalize dispatches, and construct `TFNHistogramData` from raw counts after each pass
+- [x] T014 [US5] Update `TFNCPUNormalizer.m` to compute histograms inline during range scan (before) and normalization loop (after), producing `TFNHistogramData` per data-model.md CPU fallback spec
+- [x] T015 [US5] Expose before/after `TFNHistogramData` on normalization result returned by `TFNNormalizer` so consumers (CLI, GUI) can access them
+- [x] T016 [US5] Add `TFNHistogramData.h` to framework public headers in `project.yml`
 
 ### Tests for Framework & Histograms (US5)
 
-- [ ] T050 [P] [US5] Create `tests/unit/TFNHistogramDataTests.m` — test `+histogramFromRawCounts:channelCount:totalPixels:` with known uint32 counts; verify normalized bins sum to 1.0 per channel; verify 256 bins per channel; test edge cases (all zeros, single spike, uniform distribution)
-- [ ] T051 [US5] Create `tests/unit/TFNHistogramGPUTests.m` — process a known 8-bit test fixture through Metal normalizer; compare before histogram bins against expected distribution computed independently; verify GPU and CPU histogram outputs match within tolerance
-- [ ] T052 [US5] Create `tests/unit/TFNHistogramBitDepthTests.m` — test histogram bin calculation for 8-bit (direct mapping), 16-bit (quantized to 256), and 32-bit float (range-mapped) TIFFs; verify bin indices are correct for known pixel values
-- [ ] T053 [US5] Create `tests/integration/TFNFrameworkIdentityTests.m` — process the same test directory via `TFNNormalizer` linked from framework; diff output files byte-by-byte against reference output from pre-refactor CLI (SC-001 verification)
-- [ ] T054 [US5] Add histogram round-trip test in `tests/unit/TFNHistogramGPUTests.m` — normalize a file to a base, then re-normalize to itself; verify before and after histograms are identical within precision (Constitution Principle II + V: round-trip correctness)
+- [x] T050 [P] [US5] Create `tests/unit/TFNHistogramDataTests.m` — test `+histogramFromRawCounts:channelCount:totalPixels:` with known uint32 counts; verify normalized bins sum to 1.0 per channel; verify 256 bins per channel; test edge cases (all zeros, single spike, uniform distribution)
+- [x] T051 [US5] Create `tests/unit/TFNHistogramGPUTests.m` — process a known 8-bit test fixture through Metal normalizer; compare before histogram bins against expected distribution computed independently; verify GPU and CPU histogram outputs match within tolerance
+- [x] T052 [US5] Create `tests/unit/TFNHistogramBitDepthTests.m` — test histogram bin calculation for 8-bit (direct mapping), 16-bit (quantized to 256), and 32-bit float (range-mapped) TIFFs; verify bin indices are correct for known pixel values
+- [x] T053 [US5] Create `tests/integration/TFNFrameworkIdentityTests.m` — process the same test directory via `TFNNormalizer` linked from framework; diff output files byte-by-byte against reference output from pre-refactor CLI (SC-001 verification)
+- [x] T054 [US5] Add histogram round-trip test in `tests/unit/TFNHistogramGPUTests.m` — normalize a file to a base, then re-normalize to itself; verify before and after histograms are identical within precision (Constitution Principle II + V: round-trip correctness)
 
 **Checkpoint**: Framework extracted, CLI works identically, histogram data available and tested. Run `xcodebuild test -scheme tiffenTests` to verify.
 

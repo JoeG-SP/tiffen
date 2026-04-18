@@ -12,3 +12,4 @@ FOUNDATION_EXPORT const unsigned char TiffenCoreVersionString[];
 #import "TFNCPUNormalizer.h"
 #import "TFNTIFFReader.h"
 #import "TFNTIFFWriter.h"
+#import "TFNHistogramData.h"
