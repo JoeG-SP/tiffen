@@ -28,6 +28,10 @@ typedef NS_ENUM(NSInteger, TFNVerbosity) {
 @property (nonatomic) TFNOutputMode outputMode;
 @property (nonatomic, copy, nullable) NSString *outputDirectory;
 @property (nonatomic) TFNVerbosity verbosity;
+@property (nonatomic) double cpuPercent;      // 0.0–1.0, default 0.9
+@property (nonatomic) double memPercent;      // 0.0–1.0, default 0.9
+@property (nonatomic) NSUInteger memPerFileGB; // GB per file estimate, default 1
+@property (nonatomic) NSUInteger maxJobs;      // If > 0, additional cap on concurrency
 
 /// Run normalization.
 /// Returns nil on fatal error (sets error).

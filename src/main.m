@@ -16,6 +16,9 @@ static void printUsage(void) {
         "  --in-place          Overwrite original files\n"
         "  -v, --verbose       Detailed progress output\n"
         "  -q, --quiet         Suppress stdout (errors still on stderr)\n"
+        "  --cpu-percent <N>   Max CPU usage percent (1-100, default: 90)\n"
+        "  --mem-percent <N>   Max memory usage percent (1-100, default: 90)\n"
+        "  -j, --jobs <N>      Override concurrency (number of parallel files)\n"
         "  -h, --help          Show this help\n"
         "  --version           Show version\n"
         "\n"
@@ -43,6 +46,9 @@ int main(int argc, const char *argv[]) {
         BOOL inPlace = NO;
         BOOL verbose = NO;
         BOOL quiet = NO;
+        double cpuPercent = 0.9;
+        double memPercent = 0.9;
+        NSInteger jobsOverride = 0;
 
         NSMutableArray<NSString *> *positional = [NSMutableArray array];
 
@@ -66,6 +72,42 @@ int main(int argc, const char *argv[]) {
                     outputDirectory = args[++i];
                 } else {
                     fprintf(stderr, "Error: --output requires a directory argument\n");
+                    return 2;
+                }
+            } else if ([arg isEqualToString:@"--cpu-percent"]) {
+                if (i + 1 < args.count) {
+                    int val = [args[++i] intValue];
+                    if (val < 1 || val > 100) {
+                        fprintf(stderr, "Error: --cpu-percent must be 1-100\n");
+                        return 2;
+                    }
+                    cpuPercent = val / 100.0;
+                } else {
+                    fprintf(stderr, "Error: --cpu-percent requires a value\n");
+                    return 2;
+                }
+            } else if ([arg isEqualToString:@"--mem-percent"]) {
+                if (i + 1 < args.count) {
+                    int val = [args[++i] intValue];
+                    if (val < 1 || val > 100) {
+                        fprintf(stderr, "Error: --mem-percent must be 1-100\n");
+                        return 2;
+                    }
+                    memPercent = val / 100.0;
+                } else {
+                    fprintf(stderr, "Error: --mem-percent requires a value\n");
+                    return 2;
+                }
+            } else if ([arg isEqualToString:@"-j"] || [arg isEqualToString:@"--jobs"]) {
+                if (i + 1 < args.count) {
+                    int val = [args[++i] intValue];
+                    if (val < 1) {
+                        fprintf(stderr, "Error: --jobs must be >= 1\n");
+                        return 2;
+                    }
+                    jobsOverride = val;
+                } else {
+                    fprintf(stderr, "Error: --jobs requires a value\n");
                     return 2;
                 }
             } else if ([arg hasPrefix:@"-"]) {
@@ -125,6 +167,12 @@ int main(int argc, const char *argv[]) {
         TFNNormalizer *normalizer = [[TFNNormalizer alloc] init];
         normalizer.outputMode = inPlace ? TFNOutputModeInPlace : TFNOutputModeDirectory;
         normalizer.outputDirectory = outputDirectory;
+        normalizer.cpuPercent = cpuPercent;
+        normalizer.memPercent = memPercent;
+
+        if (jobsOverride > 0) {
+            normalizer.maxJobs = (NSUInteger)jobsOverride;
+        }
 
         if (verbose) {
             normalizer.verbosity = TFNVerbosityVerbose;

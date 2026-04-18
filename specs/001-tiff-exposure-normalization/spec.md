@@ -116,7 +116,9 @@ file is reported on stderr while valid files are normalized.
 - **FR-001**: System MUST accept a base TIFF file path and a target
   directory as input arguments.
 - **FR-002**: System MUST compute the exposure range (min/max pixel
-  values per channel) of the base TIFF.
+  values per channel) of the base TIFF. Exposure range computation
+  MUST use GPU parallel reduction when Metal is available, falling
+  back to CPU if not.
 - **FR-003**: System MUST re-map pixel values in each target TIFF so
   the output exposure range matches the base TIFF range.
 - **FR-004**: System MUST write normalized files to an output
@@ -136,6 +138,16 @@ file is reported on stderr while valid files are normalized.
   on failure.
 - **FR-010**: System MUST support 8-bit, 16-bit, and 32-bit (integer
   and floating point) TIFF files.
+- **FR-011**: System MUST process files concurrently using multiple
+  workers. Default concurrency is the minimum of 90% of CPU cores
+  and 90% of available RAM (assuming 1 GB per file).
+- **FR-012**: System MUST support `--cpu-percent <N>` to cap CPU
+  usage (1–100), `--mem-percent <N>` to cap memory usage (1–100),
+  and `-j`/`--jobs <N>` to set a hard concurrency cap. The final
+  concurrency is the minimum of all applicable limits.
+- **FR-013**: System MUST display per-step timing statistics
+  (read/decompress, range, normalize, write/compress) in the
+  summary. In verbose mode, per-file timing MUST also be shown.
 
 ### Key Entities
 
@@ -154,8 +166,9 @@ file is reported on stderr while valid files are normalized.
 - **SC-001**: All output files have per-channel min/max pixel values
   matching the base TIFF within documented precision (e.g., +/- 1
   for integer types, +/- 1e-6 for floating point).
-- **SC-002**: A directory of 1,000 TIFF files is processed without
-  the user experiencing an unreasonable wait (linear time scaling).
+- **SC-002**: A directory of 1,000 TIFF files is processed with
+  parallel workers, scaling throughput with available CPU cores.
+  Processing time MUST scale inversely with concurrency.
 - **SC-003**: Original files are never modified unless `--in-place`
   is explicitly provided.
 - **SC-004**: 100% of corrupt or unsupported files are reported on

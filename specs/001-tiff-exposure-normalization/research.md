@@ -131,11 +131,40 @@ macOS-only project.
 - **Swift Package Manager**: Does not support Metal shader
   compilation or Objective-C XCTest targets cleanly.
 
-## R5: Test Strategy — CPU Reference Path
+## R5: Parallel File Processing
+
+**Decision**: Process files concurrently using GCD (Grand Central
+Dispatch) with a semaphore-controlled worker pool. Default
+concurrency is `min(90% CPU cores, 90% RAM at 1 GB per file)`.
+Users can override via `--cpu-percent`, `--mem-percent`, or `--jobs`.
+
+**Rationale**: Profiling showed 90.7% of per-file time is spent in
+write/compress (Deflate). Read/decompress is 9%. GPU range and
+normalize are <0.2% combined. Since the bottleneck is CPU-bound
+compression, parallelizing across files yields near-linear speedup.
+Observed: 14.7x speedup with 18 workers on a 24-core machine
+(30 min → 2 min for 65 files).
+
+**Key design decisions**:
+- GCD concurrent queue with dispatch_semaphore for backpressure
+- Each file gets its own @autoreleasepool to bound memory
+- Metal command queue is thread-safe; shared across workers
+- Result accumulation protected by NSLock
+- Memory-based limit assumes ~1 GB working set per file (pixel
+  buffer + libtiff internal buffers)
+
+**Alternatives considered**:
+- **NSOperationQueue**: Works but GCD is lighter weight for this
+  use case (no cancellation or priority needed).
+- **Per-file processes**: Would allow true parallelism but adds
+  IPC overhead and complicates Metal device sharing.
+
+## R6: Test Strategy — CPU Reference Path
 
 **Decision**: Implement a pure CPU normalizer (`TFNCPUNormalizer`)
-that performs identical math to the Metal kernel. Tests run both
-paths and compare output buffers within precision tolerance.
+and CPU exposure range scanner as reference implementations.
+Tests run both CPU and GPU paths and compare output within
+precision tolerance.
 
 **Rationale**: Metal compute results can vary slightly due to GPU
 floating-point implementation. A CPU reference path with known

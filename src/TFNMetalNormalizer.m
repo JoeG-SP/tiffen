@@ -1,4 +1,6 @@
 #import "TFNMetalNormalizer.h"
+#include <mach-o/dyld.h>
+#include <limits.h>
 
 NSString *const TFNMetalNormalizerErrorDomain = @"TFNMetalNormalizerErrorDomain";
 
@@ -44,12 +46,29 @@ typedef struct {
         NSError *libError = nil;
         _library = [_device newDefaultLibrary];
         if (!_library) {
-            // Try loading from metallib next to executable
-            NSString *exePath = [[NSBundle mainBundle] executablePath];
-            NSString *libPath = [[exePath stringByDeletingLastPathComponent]
-                                  stringByAppendingPathComponent:@"default.metallib"];
-            NSURL *libURL = [NSURL fileURLWithPath:libPath];
-            _library = [_device newLibraryWithURL:libURL error:&libError];
+            // For command-line tools, newDefaultLibrary won't work.
+            // Find metallib next to the executable using _NSGetExecutablePath.
+            char pathBuf[PATH_MAX];
+            uint32_t pathSize = sizeof(pathBuf);
+            if (_NSGetExecutablePath(pathBuf, &pathSize) == 0) {
+                char realBuf[PATH_MAX];
+                if (realpath(pathBuf, realBuf)) {
+                    NSString *exePath = [NSString stringWithUTF8String:realBuf];
+                    NSString *libPath = [[exePath stringByDeletingLastPathComponent]
+                                          stringByAppendingPathComponent:@"default.metallib"];
+                    NSURL *libURL = [NSURL fileURLWithPath:libPath];
+                    _library = [_device newLibraryWithURL:libURL error:&libError];
+                }
+            }
+        }
+        if (!_library) {
+            // Last resort: try NSBundle mainBundle
+            NSString *bundlePath = [[NSBundle mainBundle] pathForResource:@"default"
+                                                                  ofType:@"metallib"];
+            if (bundlePath) {
+                NSURL *libURL = [NSURL fileURLWithPath:bundlePath];
+                _library = [_device newLibraryWithURL:libURL error:&libError];
+            }
         }
         if (!_library) return nil;
 
