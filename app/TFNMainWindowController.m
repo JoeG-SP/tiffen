@@ -2,6 +2,8 @@
 #import "TFNProcessingEngine.h"
 #import "TFNProcessedFileInfo.h"
 #import "TFNFileListDataSource.h"
+#import "TFNHistogramView.h"
+#import "TFNExposureRange.h"
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 static NSString *const kBaseTIFFKey = @"TFNLastBaseTIFFPath";
@@ -23,6 +25,7 @@ static NSString *const kInPlaceKey = @"TFNInPlace";
 @property (nonatomic, strong) NSTextField *summaryLabel;
 @property (nonatomic, strong) TFNFileListDataSource *dataSource;
 @property (nonatomic, strong) TFNProcessingEngine *engine;
+@property (nonatomic, strong) NSPopover *histogramPopover;
 
 @end
 
@@ -45,6 +48,7 @@ static NSString *const kInPlaceKey = @"TFNInPlace";
         _dataSource = [[TFNFileListDataSource alloc] init];
         [self setupUI];
         [self setupNotifications];
+        [self setupHistogramPopover];
         [self restorePaths];
         [self updateInPlaceState];
         [self updateNormalizeButtonState];
@@ -55,6 +59,7 @@ static NSString *const kInPlaceKey = @"TFNInPlace";
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:kInPlaceKey];
+    [[NSUserDefaults standardUserDefaults] removeObserver:self forKeyPath:@"TFNShowPerFileTiming"];
 }
 
 #pragma mark - UI Setup
@@ -138,10 +143,39 @@ static NSString *const kInPlaceKey = @"TFNInPlace";
     timeCol.width = 80;
     [self.tableView addTableColumn:timeCol];
 
+    // Per-step timing columns (toggleable via TFNShowPerFileTiming)
+    NSTableColumn *readCol = [[NSTableColumn alloc] initWithIdentifier:@"readTime"];
+    readCol.title = @"Read";
+    readCol.width = 60;
+    [self.tableView addTableColumn:readCol];
+
+    NSTableColumn *rangeCol = [[NSTableColumn alloc] initWithIdentifier:@"rangeTime"];
+    rangeCol.title = @"Range";
+    rangeCol.width = 60;
+    [self.tableView addTableColumn:rangeCol];
+
+    NSTableColumn *normCol = [[NSTableColumn alloc] initWithIdentifier:@"normalizeTime"];
+    normCol.title = @"Norm";
+    normCol.width = 60;
+    [self.tableView addTableColumn:normCol];
+
+    NSTableColumn *writeCol = [[NSTableColumn alloc] initWithIdentifier:@"writeTime"];
+    writeCol.title = @"Write";
+    writeCol.width = 60;
+    [self.tableView addTableColumn:writeCol];
+
+    // Sort descriptors
+    for (NSTableColumn *col in self.tableView.tableColumns) {
+        col.sortDescriptorPrototype = [NSSortDescriptor sortDescriptorWithKey:col.identifier ascending:YES];
+    }
+
     self.tableView.dataSource = self.dataSource;
     self.tableView.delegate = self.dataSource;
     self.scrollView.documentView = self.tableView;
     [content addSubview:self.scrollView];
+
+    // Apply initial column visibility
+    [self updateTimingColumnVisibility];
 
     // Summary bar
     self.summaryLabel = [[NSTextField alloc] initWithFrame:NSMakeRect(margin, 10, 770, 20)];
@@ -197,12 +231,16 @@ static NSString *const kInPlaceKey = @"TFNInPlace";
 
     [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:kInPlaceKey
                                                options:NSKeyValueObservingOptionNew context:NULL];
+    [[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:@"TFNShowPerFileTiming"
+                                               options:NSKeyValueObservingOptionNew context:NULL];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
                         change:(NSDictionary *)change context:(void *)context {
     if ([keyPath isEqualToString:kInPlaceKey]) {
         [self updateInPlaceState];
+    } else if ([keyPath isEqualToString:@"TFNShowPerFileTiming"]) {
+        [self updateTimingColumnVisibility];
     }
 }
 
@@ -473,6 +511,96 @@ static NSString *const kInPlaceKey = @"TFNInPlace";
         for (NSString *path in self.engine.writtenOutputPaths) {
             [fm removeItemAtPath:path error:nil];
         }
+    }
+}
+
+- (void)setupHistogramPopover {
+    __weak typeof(self) weakSelf = self;
+    self.dataSource.onRowSelected = ^(TFNProcessedFileInfo *info, NSRect rowRect) {
+        [weakSelf showHistogramForFile:info atRect:rowRect];
+    };
+}
+
+- (void)showHistogramForFile:(TFNProcessedFileInfo *)info atRect:(NSRect)rowRect {
+    if (!info.beforeHistogram && !info.afterHistogram) return;
+
+    [self.histogramPopover close];
+
+    // Build content view
+    NSView *contentView = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 480, 300)];
+
+    // Title
+    NSTextField *titleLabel = [[NSTextField alloc] initWithFrame:NSMakeRect(10, 270, 460, 20)];
+    titleLabel.stringValue = [NSString stringWithFormat:@"%@ — Histogram", info.fileName];
+    titleLabel.font = [NSFont boldSystemFontOfSize:13];
+    titleLabel.editable = NO;
+    titleLabel.bordered = NO;
+    titleLabel.backgroundColor = [NSColor clearColor];
+    [contentView addSubview:titleLabel];
+
+    // Before histogram
+    TFNHistogramView *beforeView = [[TFNHistogramView alloc] initWithFrame:NSMakeRect(10, 60, 220, 200)];
+    beforeView.histogramData = info.beforeHistogram;
+    beforeView.title = @"Before";
+    [contentView addSubview:beforeView];
+
+    // After histogram
+    TFNHistogramView *afterView = [[TFNHistogramView alloc] initWithFrame:NSMakeRect(250, 60, 220, 200)];
+    afterView.histogramData = info.afterHistogram;
+    afterView.title = @"After";
+    [contentView addSubview:afterView];
+
+    // Range label
+    NSString *rangeStr = @"";
+    if (info.sourceRange && info.normalizedRange) {
+        rangeStr = [NSString stringWithFormat:@"Range: [%.1f, %.1f] → [%.1f, %.1f]",
+            info.sourceRange.minValues[0], info.sourceRange.maxValues[0],
+            info.normalizedRange.minValues[0], info.normalizedRange.maxValues[0]];
+    }
+    NSTextField *rangeLabel = [[NSTextField alloc] initWithFrame:NSMakeRect(10, 35, 460, 16)];
+    rangeLabel.stringValue = rangeStr;
+    rangeLabel.font = [NSFont systemFontOfSize:11];
+    rangeLabel.editable = NO;
+    rangeLabel.bordered = NO;
+    rangeLabel.backgroundColor = [NSColor clearColor];
+    [contentView addSubview:rangeLabel];
+
+    // Metadata label
+    NSString *metaStr = [NSString stringWithFormat:@"Bit depth: %lu-bit%@ | Channels: %lu",
+        (unsigned long)info.bitDepth,
+        info.isFloat ? @" float" : @"",
+        (unsigned long)info.channelCount];
+    NSTextField *metaLabel = [[NSTextField alloc] initWithFrame:NSMakeRect(10, 15, 460, 16)];
+    metaLabel.stringValue = metaStr;
+    metaLabel.font = [NSFont systemFontOfSize:11];
+    metaLabel.textColor = [NSColor secondaryLabelColor];
+    metaLabel.editable = NO;
+    metaLabel.bordered = NO;
+    metaLabel.backgroundColor = [NSColor clearColor];
+    [contentView addSubview:metaLabel];
+
+    // Create popover
+    NSViewController *vc = [[NSViewController alloc] init];
+    vc.view = contentView;
+
+    self.histogramPopover = [[NSPopover alloc] init];
+    self.histogramPopover.contentViewController = vc;
+    self.histogramPopover.contentSize = NSMakeSize(480, 300);
+    self.histogramPopover.behavior = NSPopoverBehaviorTransient;
+
+    // Show anchored to the row in the table view
+    NSRect anchorRect = [self.tableView rectOfRow:self.tableView.selectedRow];
+    [self.histogramPopover showRelativeToRect:anchorRect
+                                      ofView:self.tableView
+                               preferredEdge:NSRectEdgeMaxY];
+}
+
+- (void)updateTimingColumnVisibility {
+    BOOL show = [[NSUserDefaults standardUserDefaults] boolForKey:@"TFNShowPerFileTiming"];
+    NSArray *timingIDs = @[@"readTime", @"rangeTime", @"normalizeTime", @"writeTime"];
+    for (NSString *ident in timingIDs) {
+        NSTableColumn *col = [self.tableView tableColumnWithIdentifier:ident];
+        col.hidden = !show;
     }
 }
 

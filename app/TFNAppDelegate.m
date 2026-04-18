@@ -1,5 +1,6 @@
 #import "TFNAppDelegate.h"
 #import "TFNMainWindowController.h"
+#import "TFNPreferencesWindowController.h"
 
 @implementation TFNAppDelegate
 
@@ -87,8 +88,11 @@
 }
 
 - (void)openPreferences:(id)sender {
-    // Preferences window will be implemented in Phase 4 (US2)
-    // For now, this is a placeholder
+    if (!self.preferencesWindowController) {
+        self.preferencesWindowController = [[TFNPreferencesWindowController alloc] init];
+    }
+    [self.preferencesWindowController showWindow:nil];
+    [self.preferencesWindowController.window makeKeyAndOrderFront:nil];
 }
 
 - (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender {

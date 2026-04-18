@@ -82,7 +82,7 @@
 
 - [x] T055 [P] [US1] Create `tests/app/TFNProcessingEngineTests.m` — test engine lifecycle: start posts `TFNProcessingDidStartNotification`, file updates post `TFNProcessingFileDidUpdateNotification` with correct index, finish posts `TFNProcessingDidFinishNotification` with summary; test cancellation stops new file dispatch; verify all notifications arrive on main queue
 - [x] T056 [P] [US1] Create `tests/app/TFNProcessedFileInfoTests.m` — test status transitions (Pending→Processing→Completed, Pending→Skipped, Processing→Error); verify timing fields are -1 until set; verify errorMessage only non-nil for Error status
-- [ ] T057 [US1] Create `tests/integration/TFNGUICLIOutputMatchTests.m` — process same test fixtures directory via `TFNProcessingEngine` (GUI path) and `TFNNormalizer` (CLI path); diff all output files byte-by-byte to verify SC-002 (GUI matches CLI output)
+- [x] T057 [US1] Create `tests/integration/TFNGUICLIOutputMatchTests.m` — process same test fixtures directory via `TFNProcessingEngine` (GUI path) and `TFNNormalizer` (CLI path); diff all output files byte-by-byte to verify SC-002 (GUI matches CLI output)
 
 **Checkpoint**: App launches, user can select files (browse + drag-and-drop), run normalization with progress, cancel with cleanup dialog. Output matches CLI. Tests verify engine notifications and GUI/CLI output parity.
 
@@ -96,15 +96,15 @@
 
 ### Implementation for User Story 2
 
-- [ ] T030 [US2] Create `app/TFNPreferencesWindowController.h` and `app/TFNPreferencesWindowController.m` — programmatic window with: CPU `NSSlider` (1–100) + value label, Memory `NSSlider` (1–100) + value label, Max Jobs `NSTextField` + `NSStepper` (0–64), In-place `NSButton` checkbox, Per-file timing `NSButton` checkbox per ui-contract.md Preferences layout
-- [ ] T031 [US2] Bind all preferences controls to `NSUserDefaultsController` via Cocoa Bindings — keys: `TFNCPUPercent`, `TFNMemPercent`, `TFNMaxJobs`, `TFNInPlace`, `TFNShowPerFileTiming` per data-model.md TFNAppSettings
-- [ ] T032 [US2] Add Settings menu item (⌘,) in `TFNAppDelegate.m` that opens `TFNPreferencesWindowController`
-- [ ] T033 [US2] Observe `TFNInPlace` default in `TFNMainWindowController.m` — when toggled, disable/enable output directory field and Browse button; show "(in-place)" placeholder text when disabled
-- [ ] T034 [US2] Wire `TFNProcessingEngine` to read `TFNCPUPercent`, `TFNMemPercent`, `TFNMaxJobs`, `TFNInPlace` from `NSUserDefaults` at normalization start and pass to `TFNNormalizer`
+- [x] T030 [US2] Create `app/TFNPreferencesWindowController.h` and `app/TFNPreferencesWindowController.m` — programmatic window with: CPU `NSSlider` (1–100) + value label, Memory `NSSlider` (1–100) + value label, Max Jobs `NSTextField` + `NSStepper` (0–64), In-place `NSButton` checkbox, Per-file timing `NSButton` checkbox per ui-contract.md Preferences layout
+- [x] T031 [US2] Bind all preferences controls to `NSUserDefaultsController` via Cocoa Bindings — keys: `TFNCPUPercent`, `TFNMemPercent`, `TFNMaxJobs`, `TFNInPlace`, `TFNShowPerFileTiming` per data-model.md TFNAppSettings
+- [x] T032 [US2] Add Settings menu item (⌘,) in `TFNAppDelegate.m` that opens `TFNPreferencesWindowController`
+- [x] T033 [US2] Observe `TFNInPlace` default in `TFNMainWindowController.m` — when toggled, disable/enable output directory field and Browse button; show "(in-place)" placeholder text when disabled
+- [x] T034 [US2] Wire `TFNProcessingEngine` to read `TFNCPUPercent`, `TFNMemPercent`, `TFNMaxJobs`, `TFNInPlace` from `NSUserDefaults` at normalization start and pass to `TFNNormalizer`
 
 ### Tests for User Story 2
 
-- [ ] T058 [US2] Create `tests/app/TFNAppSettingsTests.m` — write each preference key to `NSUserDefaults`, read back via standard defaults, verify all values round-trip correctly (SC-004 verification); test clamping: set cpuPercent to 0 and 150, verify clamped to 1 and 100; test mutual exclusion: set inPlace=YES, verify outputDirectoryOverride is ignored by engine
+- [x] T058 [US2] Create `tests/app/TFNAppSettingsTests.m` — write each preference key to `NSUserDefaults`, read back via standard defaults, verify all values round-trip correctly (SC-004 verification); test clamping: set cpuPercent to 0 and 150, verify clamped to 1 and 100; test mutual exclusion: set inPlace=YES, verify outputDirectoryOverride is ignored by engine
 
 **Checkpoint**: All settings persist across quit/relaunch, validated by tests. In-place mode disables output field. Concurrency settings affect processing.
 
@@ -118,14 +118,14 @@
 
 ### Implementation for User Story 3
 
-- [ ] T035 [US3] Add per-step timing columns to `TFNFileListDataSource.m` — Read, Range, Normalize, Write columns alongside existing File, Status, Total Time; format as seconds with 2 decimal places
-- [ ] T036 [US3] Implement column visibility toggle in `TFNFileListDataSource.m` — observe `TFNShowPerFileTiming` user default; show/hide Read, Range, Normalize, Write columns dynamically via `setHidden:` on `NSTableColumn`
-- [ ] T037 [US3] Implement column sorting in `TFNFileListDataSource.m` — set `sortDescriptorPrototype` on each `NSTableColumn`; implement `tableView:sortDescriptorsDidChange:` to re-sort `files` array and reload table
-- [ ] T038 [US3] Add error/warning tooltips in `TFNFileListDataSource.m` — error rows show `NSImageNameCaution` icon in status column with `errorMessage` as tooltip; flat-exposure warnings show warning icon with channel info
+- [x] T035 [US3] Add per-step timing columns to `TFNFileListDataSource.m` — Read, Range, Normalize, Write columns alongside existing File, Status, Total Time; format as seconds with 2 decimal places
+- [x] T036 [US3] Implement column visibility toggle in `TFNFileListDataSource.m` — observe `TFNShowPerFileTiming` user default; show/hide Read, Range, Normalize, Write columns dynamically via `setHidden:` on `NSTableColumn`
+- [x] T037 [US3] Implement column sorting in `TFNFileListDataSource.m` — set `sortDescriptorPrototype` on each `NSTableColumn`; implement `tableView:sortDescriptorsDidChange:` to re-sort `files` array and reload table
+- [x] T038 [US3] Add error/warning tooltips in `TFNFileListDataSource.m` — error rows show `NSImageNameCaution` icon in status column with `errorMessage` as tooltip; flat-exposure warnings show warning icon with channel info
 
 ### Tests for User Story 3
 
-- [ ] T059 [US3] Create `tests/app/TFNFileListDataSourceTests.m` — test sort descriptors: populate data source with known file infos with varying times, apply sort by each column (name, status, totalTime, readTime, writeTime), verify order is correct; test column visibility toggle: set `TFNShowPerFileTiming` to NO, verify per-step columns report hidden
+- [x] T059 [US3] Create `tests/app/TFNFileListDataSourceTests.m` — test sort descriptors: populate data source with known file infos with varying times, apply sort by each column (name, status, totalTime, readTime, writeTime), verify order is correct; test column visibility toggle: set `TFNShowPerFileTiming` to NO, verify per-step columns report hidden
 
 **Checkpoint**: File list shows all timing data, sorting works on all columns, errors show tooltips. Tests verify sort correctness and column toggling.
 
@@ -139,15 +139,15 @@
 
 ### Implementation for User Story 4
 
-- [ ] T039 [P] [US4] Create `app/TFNHistogramView.h` and `app/TFNHistogramView.m` — custom `NSView` subclass; `drawRect:` renders 256-bin histogram using `CGContextBeginPath`/`CGContextAddLineToPoint`/`CGContextFillPath` with per-channel semi-transparent colors (R=1,0,0,0.4; G=0,1,0,0.4; B=0,0,1,0.4; Gray=0.5,0.5,0.5,0.6) per ui-contract.md; accepts `TFNHistogramData*` via setter; `accessibilityLabel` describes data range
-- [ ] T040 [US4] Create histogram popover view controller in `app/TFNMainWindowController.m` — `NSPopover` with `NSPopoverBehaviorTransient`, 480x300 pt content view containing: file name label, two `TFNHistogramView` instances (before/after) in `NSStackView`, channel color legend, range label (`[min, max] → [min, max]`), metadata label (bit depth, channels) per ui-contract.md Histogram Popover
-- [ ] T041 [US4] Wire row click in `TFNFileListDataSource.m` to show histogram popover — on `tableViewSelectionDidChange:`, if selected file has `status == TFNProcessingStatusCompleted`, show popover anchored to selected row rect with `NSRectEdgeMaxY`; if not completed, do nothing
-- [ ] T042 [US4] Populate `TFNProcessedFileInfo` histogram fields from `TFNProcessingEngine` — after each file completes, extract `beforeHistogram` and `afterHistogram` from framework normalization result and assign to the file info
+- [x] T039 [P] [US4] Create `app/TFNHistogramView.h` and `app/TFNHistogramView.m` — custom `NSView` subclass; `drawRect:` renders 256-bin histogram using `CGContextBeginPath`/`CGContextAddLineToPoint`/`CGContextFillPath` with per-channel semi-transparent colors (R=1,0,0,0.4; G=0,1,0,0.4; B=0,0,1,0.4; Gray=0.5,0.5,0.5,0.6) per ui-contract.md; accepts `TFNHistogramData*` via setter; `accessibilityLabel` describes data range
+- [x] T040 [US4] Create histogram popover view controller in `app/TFNMainWindowController.m` — `NSPopover` with `NSPopoverBehaviorTransient`, 480x300 pt content view containing: file name label, two `TFNHistogramView` instances (before/after) in `NSStackView`, channel color legend, range label (`[min, max] → [min, max]`), metadata label (bit depth, channels) per ui-contract.md Histogram Popover
+- [x] T041 [US4] Wire row click in `TFNFileListDataSource.m` to show histogram popover — on `tableViewSelectionDidChange:`, if selected file has `status == TFNProcessingStatusCompleted`, show popover anchored to selected row rect with `NSRectEdgeMaxY`; if not completed, do nothing
+- [x] T042 [US4] Populate `TFNProcessedFileInfo` histogram fields from `TFNProcessingEngine` — after each file completes, extract `beforeHistogram` and `afterHistogram` from framework normalization result and assign to the file info
 
 ### Tests for User Story 4
 
-- [ ] T060 [US4] Create `tests/app/TFNHistogramViewTests.m` — instantiate `TFNHistogramView` with known `TFNHistogramData` (single channel, uniform distribution); call `drawRect:` into a bitmap context; verify pixels at expected positions are non-transparent (histogram area is drawn); test with nil data produces empty view; verify accessibilityLabel is non-empty when data is set
-- [ ] T061 [US4] Create `tests/integration/TFNHistogramAccuracyTests.m` — process a known 8-bit test fixture with predetermined pixel distribution; extract `beforeHistogram` from result; verify specific bin values match expected counts (SC-006 verification); repeat for 16-bit and 32-bit float fixtures
+- [x] T060 [US4] Create `tests/app/TFNHistogramViewTests.m` — instantiate `TFNHistogramView` with known `TFNHistogramData` (single channel, uniform distribution); call `drawRect:` into a bitmap context; verify pixels at expected positions are non-transparent (histogram area is drawn); test with nil data produces empty view; verify accessibilityLabel is non-empty when data is set
+- [x] T061 [US4] Create `tests/integration/TFNHistogramAccuracyTests.m` — process a known 8-bit test fixture with predetermined pixel distribution; extract `beforeHistogram` from result; verify specific bin values match expected counts (SC-006 verification); repeat for 16-bit and 32-bit float fixtures
 
 **Checkpoint**: Clicking a completed row shows popover with before/after histograms, correct colors, range labels. Clicking away dismisses. Tests verify histogram rendering and bin accuracy across bit depths.
 
@@ -157,16 +157,16 @@
 
 **Purpose**: Final integration, edge cases, accessibility, performance validation
 
-- [ ] T043 Implement edge case: stale NSUserDefaults paths — in `TFNMainWindowController.m`, on launch validate restored paths exist; if not, show stale path but keep Normalize disabled
-- [ ] T044 Implement edge case: empty directory — in `TFNProcessingEngine.m`, if no TIFF files found, post finish notification immediately with "0 files to process" summary
-- [ ] T045 Implement edge case: fatal errors — in `TFNMainWindowController.m`, before starting engine validate base TIFF exists and is readable, input directory exists; show `NSAlert` with `NSAlertStyleCritical` if not
-- [ ] T046 [P] Add accessibility labels to all controls in `TFNMainWindowController.m` and `TFNPreferencesWindowController.m` via `setAccessibilityLabel:`
-- [ ] T047 [P] Add app icon and `Info.plist` configuration in `project.yml` for `tiffenApp` target — bundle ID `com.tiffen.app`, display name "Tiffen"
-- [ ] T048 Update `README.md` to document both CLI and GUI usage, build instructions for all three targets
-- [ ] T049 Run quickstart.md validation — build all targets, launch app, process test fixtures, verify output
-- [ ] T062 [P] Create `tests/app/TFNResponsivenessTests.m` — start normalization on a directory of 100+ test fixtures; use `XCTMeasureBlock` to verify main thread is never blocked >100ms during processing (SC-003 validation); verify `NSProgressIndicator` updates arrive within 200ms of file completion
-- [ ] T063 [P] Create `tests/app/TFNHistogramRenderingPerfTests.m` — instantiate `TFNHistogramView` with 4-channel histogram data; render into bitmap context inside `XCTMeasureBlock`; verify single `drawRect:` completes in <16ms (SC-005 validation, 60fps capable)
-- [ ] T064 Verify no Swift files in project — run `find app/ cli/ src/ -name "*.swift"` and assert empty result; ensure `project.yml` has no Swift-related settings (FR-014 enforcement)
+- [x] T043 Implement edge case: stale NSUserDefaults paths — in `TFNMainWindowController.m`, on launch validate restored paths exist; if not, show stale path but keep Normalize disabled
+- [x] T044 Implement edge case: empty directory — in `TFNProcessingEngine.m`, if no TIFF files found, post finish notification immediately with "0 files to process" summary
+- [x] T045 Implement edge case: fatal errors — in `TFNMainWindowController.m`, before starting engine validate base TIFF exists and is readable, input directory exists; show `NSAlert` with `NSAlertStyleCritical` if not
+- [x] T046 [P] Add accessibility labels to all controls in `TFNMainWindowController.m` and `TFNPreferencesWindowController.m` via `setAccessibilityLabel:`
+- [x] T047 [P] Add app icon and `Info.plist` configuration in `project.yml` for `tiffenApp` target — bundle ID `com.tiffen.app`, display name "Tiffen"
+- [x] T048 Update `README.md` to document both CLI and GUI usage, build instructions for all three targets
+- [x] T049 Run quickstart.md validation — build all targets, launch app, process test fixtures, verify output
+- [x] T062 [P] Create `tests/app/TFNResponsivenessTests.m` — start normalization on a directory of 100+ test fixtures; use `XCTMeasureBlock` to verify main thread is never blocked >100ms during processing (SC-003 validation); verify `NSProgressIndicator` updates arrive within 200ms of file completion
+- [x] T063 [P] Create `tests/app/TFNHistogramRenderingPerfTests.m` — instantiate `TFNHistogramView` with 4-channel histogram data; render into bitmap context inside `XCTMeasureBlock`; verify single `drawRect:` completes in <16ms (SC-005 validation, 60fps capable)
+- [x] T064 Verify no Swift files in project — run `find app/ cli/ src/ -name "*.swift"` and assert empty result; ensure `project.yml` has no Swift-related settings (FR-014 enforcement)
 
 ---
 

@@ -1,15 +1,61 @@
 #import "TFNFileListDataSource.h"
 
-@implementation TFNFileListDataSource
+@implementation TFNFileListDataSource {
+    NSMutableArray<TFNProcessedFileInfo *> *_sortedFiles;
+}
+
+- (void)setFiles:(NSArray<TFNProcessedFileInfo *> *)files {
+    _files = files;
+    _sortedFiles = [files mutableCopy];
+}
+
+- (void)sortWithDescriptors:(NSArray<NSSortDescriptor *> *)descriptors {
+    if (!descriptors.count || !_sortedFiles.count) return;
+
+    [_sortedFiles sortUsingComparator:^NSComparisonResult(TFNProcessedFileInfo *a, TFNProcessedFileInfo *b) {
+        for (NSSortDescriptor *desc in descriptors) {
+            NSString *key = desc.key;
+            NSComparisonResult result = NSOrderedSame;
+
+            if ([key isEqualToString:@"file"]) {
+                result = [a.fileName localizedCaseInsensitiveCompare:b.fileName];
+            } else if ([key isEqualToString:@"status"]) {
+                result = [@(a.status) compare:@(b.status)];
+            } else if ([key isEqualToString:@"totalTime"]) {
+                result = [@(a.totalTime) compare:@(b.totalTime)];
+            } else if ([key isEqualToString:@"readTime"]) {
+                result = [@(a.readTime) compare:@(b.readTime)];
+            } else if ([key isEqualToString:@"rangeTime"]) {
+                result = [@(a.rangeTime) compare:@(b.rangeTime)];
+            } else if ([key isEqualToString:@"normalizeTime"]) {
+                result = [@(a.normalizeTime) compare:@(b.normalizeTime)];
+            } else if ([key isEqualToString:@"writeTime"]) {
+                result = [@(a.writeTime) compare:@(b.writeTime)];
+            }
+
+            if (!desc.ascending) {
+                result = -result;
+            }
+            if (result != NSOrderedSame) return result;
+        }
+        return NSOrderedSame;
+    }];
+}
+
+- (void)tableView:(NSTableView *)tableView sortDescriptorsDidChange:(NSArray<NSSortDescriptor *> *)oldDescriptors {
+    [self sortWithDescriptors:tableView.sortDescriptors];
+    [tableView reloadData];
+}
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
-    return (NSInteger)self.files.count;
+    return (NSInteger)(_sortedFiles ? _sortedFiles.count : self.files.count);
 }
 
 - (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
-    if (row < 0 || (NSUInteger)row >= self.files.count) return nil;
+    NSArray *source = _sortedFiles ?: self.files;
+    if (row < 0 || (NSUInteger)row >= source.count) return nil;
 
-    TFNProcessedFileInfo *info = self.files[row];
+    TFNProcessedFileInfo *info = source[row];
     NSString *identifier = tableColumn.identifier;
 
     NSTextField *cell = [tableView makeViewWithIdentifier:identifier owner:self];
@@ -63,6 +109,23 @@
     }
 
     return cell;
+}
+
+- (void)tableViewSelectionDidChange:(NSNotification *)notification {
+    NSTableView *tv = notification.object;
+    NSInteger row = tv.selectedRow;
+    if (row < 0) return;
+
+    NSArray *source = _sortedFiles ?: self.files;
+    if ((NSUInteger)row >= source.count) return;
+
+    TFNProcessedFileInfo *info = source[row];
+    if (info.status != TFNProcessingStatusCompleted) return;
+    if (!self.onRowSelected) return;
+
+    NSRect rowRect = [tv rectOfRow:row];
+    NSRect visibleRect = [tv convertRect:rowRect toView:nil];
+    self.onRowSelected(info, visibleRect);
 }
 
 @end
