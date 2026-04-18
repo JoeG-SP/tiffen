@@ -33,7 +33,12 @@ NSString *const TFNTIFFWriterErrorDomain = @"TFNTIFFWriterErrorDomain";
     TIFFSetField(tif, TIFFTAG_SAMPLESPERPIXEL, spp);
     TIFFSetField(tif, TIFFTAG_ORIENTATION, ORIENTATION_TOPLEFT);
     TIFFSetField(tif, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
-    TIFFSetField(tif, TIFFTAG_ROWSPERSTRIP, h);
+
+    // Preserve original compression and strip layout
+    uint16_t compression = image.compression ? image.compression : COMPRESSION_NONE;
+    uint32_t rowsPerStrip = image.rowsPerStrip ? image.rowsPerStrip : h;
+    TIFFSetField(tif, TIFFTAG_COMPRESSION, compression);
+    TIFFSetField(tif, TIFFTAG_ROWSPERSTRIP, rowsPerStrip);
 
     if (image.isFloat) {
         TIFFSetField(tif, TIFFTAG_SAMPLEFORMAT, SAMPLEFORMAT_IEEEFP);
@@ -46,9 +51,6 @@ NSString *const TFNTIFFWriterErrorDomain = @"TFNTIFFWriterErrorDomain";
     } else {
         TIFFSetField(tif, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_MINISBLACK);
     }
-
-    // No compression for simplicity and speed
-    TIFFSetField(tif, TIFFTAG_COMPRESSION, COMPRESSION_NONE);
 
     NSUInteger bytesPerSample = bps / 8;
     NSUInteger rowBytes = (NSUInteger)w * spp * bytesPerSample;

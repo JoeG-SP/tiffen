@@ -46,6 +46,18 @@
                      width:32 height:32 channelCount:1 bitDepth:8 isFloat:NO
                   minValue:128.0f maxValue:128.0f];
 
+    // Deflate-compressed
+    [self createTIFFAtPath:[tmpDir stringByAppendingPathComponent:@"compressed_deflate.tiff"]
+                     width:64 height:64 channelCount:3 bitDepth:16 isFloat:NO
+                  minValue:1000.0f maxValue:60000.0f
+               compression:COMPRESSION_DEFLATE];
+
+    // LZW-compressed
+    [self createTIFFAtPath:[tmpDir stringByAppendingPathComponent:@"compressed_lzw.tiff"]
+                     width:64 height:64 channelCount:1 bitDepth:8 isFloat:NO
+                  minValue:10.0f maxValue:240.0f
+               compression:COMPRESSION_LZW];
+
     // Corrupt
     [self createCorruptTIFFAtPath:[tmpDir stringByAppendingPathComponent:@"corrupt.tiff"]];
 
@@ -63,6 +75,21 @@
                        isFloat:(BOOL)isFloat
                       minValue:(float)minValue
                       maxValue:(float)maxValue {
+    return [self createTIFFAtPath:path width:width height:height
+                    channelCount:channelCount bitDepth:bitDepth
+                         isFloat:isFloat minValue:minValue maxValue:maxValue
+                     compression:COMPRESSION_NONE];
+}
+
++ (NSString *)createTIFFAtPath:(NSString *)path
+                         width:(NSUInteger)width
+                        height:(NSUInteger)height
+                  channelCount:(NSUInteger)channelCount
+                      bitDepth:(NSUInteger)bitDepth
+                       isFloat:(BOOL)isFloat
+                      minValue:(float)minValue
+                      maxValue:(float)maxValue
+                   compression:(uint16_t)compression {
     TIFFSetWarningHandler(NULL);
     TIFF *tif = TIFFOpen([path fileSystemRepresentation], "w");
     if (!tif) return path;
@@ -77,7 +104,7 @@
     TIFFSetField(tif, TIFFTAG_ORIENTATION, ORIENTATION_TOPLEFT);
     TIFFSetField(tif, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
     TIFFSetField(tif, TIFFTAG_ROWSPERSTRIP, (uint32_t)height);
-    TIFFSetField(tif, TIFFTAG_COMPRESSION, COMPRESSION_NONE);
+    TIFFSetField(tif, TIFFTAG_COMPRESSION, compression);
 
     if (isFloat) {
         TIFFSetField(tif, TIFFTAG_SAMPLEFORMAT, SAMPLEFORMAT_IEEEFP);

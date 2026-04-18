@@ -120,8 +120,8 @@ file is reported on stderr while valid files are normalized.
   the output exposure range matches the base TIFF range.
 - **FR-004**: System MUST write normalized files to an output
   directory, preserving original filenames.
-- **FR-005**: System MUST preserve the original bit depth and channel
-  count of each input TIFF in the output.
+- **FR-005**: System MUST preserve the original bit depth, channel
+  count, and compression scheme of each input TIFF in the output.
 - **FR-006**: System MUST skip non-TIFF files in the target directory
   without error.
 - **FR-007**: System MUST support an `--in-place` flag to overwrite

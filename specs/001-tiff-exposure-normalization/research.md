@@ -14,6 +14,12 @@ lightweight C library with no transitive dependencies beyond zlib.
 Apple ships it in the SDK but linking against Homebrew or vendored
 libtiff gives version control.
 
+**Compression preservation**: The reader captures the original TIFF
+compression scheme (e.g., Deflate, LZW, None) and rows-per-strip
+layout. The writer applies the same compression when writing the
+normalized output, ensuring file sizes remain comparable to the
+originals.
+
 **Alternatives considered**:
 - **ImageIO.framework (CGImageSource/CGImageDestination)**: Higher-level
   Apple API. Handles common TIFF cases but abstracts away direct pixel

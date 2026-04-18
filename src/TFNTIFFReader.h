@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) void *pixelData;
 @property (nonatomic) NSUInteger pixelDataLength;
 @property (nonatomic, nullable) TFNExposureRange *exposureRange;
+@property (nonatomic) uint16_t compression;
+@property (nonatomic) uint32_t rowsPerStrip;
 
 /// Bytes per sample (bitDepth / 8).
 @property (nonatomic, readonly) NSUInteger bytesPerSample;

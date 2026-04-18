@@ -35,6 +35,8 @@ Represents a loaded TIFF image in memory.
 | pixelData | void* | Raw pixel buffer (row-major, interleaved channels) |
 | pixelDataLength | NSUInteger | Length of pixelData in bytes |
 | exposureRange | TFNExposureRange* | Computed min/max per channel |
+| compression | uint16_t | Original TIFF compression scheme (e.g., Deflate, LZW, None) |
+| rowsPerStrip | uint32_t | Original strip layout for write-back |
 
 **Validation rules**:
 - pixelDataLength MUST equal width * height * channelCount * (bitDepth / 8)

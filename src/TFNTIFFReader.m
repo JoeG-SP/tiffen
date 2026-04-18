@@ -60,6 +60,11 @@ NSString *const TFNTIFFReaderErrorDomain = @"TFNTIFFReaderErrorDomain";
     TIFFGetField(tif, TIFFTAG_BITSPERSAMPLE, &bps);
     TIFFGetField(tif, TIFFTAG_SAMPLESPERPIXEL, &spp);
 
+    uint16_t compression = COMPRESSION_NONE;
+    uint32_t rowsPerStrip = 0;
+    TIFFGetField(tif, TIFFTAG_COMPRESSION, &compression);
+    TIFFGetField(tif, TIFFTAG_ROWSPERSTRIP, &rowsPerStrip);
+
     if (!TIFFGetField(tif, TIFFTAG_SAMPLEFORMAT, &sampleFormat)) {
         sampleFormat = SAMPLEFORMAT_UINT;
     }
@@ -126,6 +131,8 @@ NSString *const TFNTIFFReaderErrorDomain = @"TFNTIFFReaderErrorDomain";
     image.isFloat = isFloat;
     image.pixelData = buffer;
     image.pixelDataLength = totalBytes;
+    image.compression = compression;
+    image.rowsPerStrip = rowsPerStrip;
 
     [image computeExposureRange];
 

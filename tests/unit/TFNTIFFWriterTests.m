@@ -1,4 +1,5 @@
 #import <XCTest/XCTest.h>
+#import <tiffio.h>
 #import "TFNTIFFReader.h"
 #import "TFNTIFFWriter.h"
 #import "TFNTestFixtures.h"
@@ -77,6 +78,67 @@
 
     XCTAssertEqual(reloaded.channelCount, 3u);
     XCTAssertEqual(memcmp(reloaded.pixelData, original.pixelData, original.pixelDataLength), 0);
+}
+
+- (void)testCompressionPreservedDeflate {
+    NSString *srcPath = [self.fixturesDir stringByAppendingPathComponent:@"compressed_deflate.tiff"];
+    NSString *dstPath = [self.fixturesDir stringByAppendingPathComponent:@"roundtrip_deflate.tiff"];
+
+    NSError *error = nil;
+    TFNTIFFImage *original = [TFNTIFFReader readTIFFAtPath:srcPath error:&error];
+    XCTAssertNotNil(original, @"Read failed: %@", error);
+    XCTAssertEqual(original.compression, COMPRESSION_DEFLATE);
+
+    BOOL writeOK = [TFNTIFFWriter writeImage:original toPath:dstPath error:&error];
+    XCTAssertTrue(writeOK, @"Write failed: %@", error);
+
+    TFNTIFFImage *reloaded = [TFNTIFFReader readTIFFAtPath:dstPath error:&error];
+    XCTAssertNotNil(reloaded, @"Re-read failed: %@", error);
+
+    XCTAssertEqual(reloaded.compression, COMPRESSION_DEFLATE,
+                    @"Compression not preserved: expected Deflate (%u), got %u",
+                    COMPRESSION_DEFLATE, reloaded.compression);
+    XCTAssertEqual(reloaded.pixelDataLength, original.pixelDataLength);
+    XCTAssertEqual(memcmp(reloaded.pixelData, original.pixelData, original.pixelDataLength), 0);
+}
+
+- (void)testCompressionPreservedLZW {
+    NSString *srcPath = [self.fixturesDir stringByAppendingPathComponent:@"compressed_lzw.tiff"];
+    NSString *dstPath = [self.fixturesDir stringByAppendingPathComponent:@"roundtrip_lzw.tiff"];
+
+    NSError *error = nil;
+    TFNTIFFImage *original = [TFNTIFFReader readTIFFAtPath:srcPath error:&error];
+    XCTAssertNotNil(original, @"Read failed: %@", error);
+    XCTAssertEqual(original.compression, COMPRESSION_LZW);
+
+    BOOL writeOK = [TFNTIFFWriter writeImage:original toPath:dstPath error:&error];
+    XCTAssertTrue(writeOK, @"Write failed: %@", error);
+
+    TFNTIFFImage *reloaded = [TFNTIFFReader readTIFFAtPath:dstPath error:&error];
+    XCTAssertNotNil(reloaded, @"Re-read failed: %@", error);
+
+    XCTAssertEqual(reloaded.compression, COMPRESSION_LZW,
+                    @"Compression not preserved: expected LZW (%u), got %u",
+                    COMPRESSION_LZW, reloaded.compression);
+    XCTAssertEqual(memcmp(reloaded.pixelData, original.pixelData, original.pixelDataLength), 0);
+}
+
+- (void)testCompressionPreservedNone {
+    NSString *srcPath = [self.fixturesDir stringByAppendingPathComponent:@"base_8bit.tiff"];
+    NSString *dstPath = [self.fixturesDir stringByAppendingPathComponent:@"roundtrip_none.tiff"];
+
+    NSError *error = nil;
+    TFNTIFFImage *original = [TFNTIFFReader readTIFFAtPath:srcPath error:&error];
+    XCTAssertNotNil(original, @"Read failed: %@", error);
+    XCTAssertEqual(original.compression, COMPRESSION_NONE);
+
+    BOOL writeOK = [TFNTIFFWriter writeImage:original toPath:dstPath error:&error];
+    XCTAssertTrue(writeOK, @"Write failed: %@", error);
+
+    TFNTIFFImage *reloaded = [TFNTIFFReader readTIFFAtPath:dstPath error:&error];
+    XCTAssertNotNil(reloaded, @"Re-read failed: %@", error);
+
+    XCTAssertEqual(reloaded.compression, COMPRESSION_NONE);
 }
 
 @end
