@@ -1,4 +1,4 @@
-# Tiffen
+# Tiffen (TIFF Exposure Normalizer)
 
 A macOS CLI tool that normalizes the exposure range of TIFF files in a directory to match a user-specified base TIFF. Designed for photographers, scientists, and imaging professionals working with batches of TIFF images captured under varying exposure conditions.
 
