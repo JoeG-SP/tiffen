@@ -88,6 +88,10 @@
             case TFNProcessingStatusSkipped:
                 cell.stringValue = @"- Skipped";
                 break;
+            case TFNProcessingStatusBase:
+                cell.stringValue = @"\u2605 Base";
+                cell.toolTip = @"Reference file (copied as-is)";
+                break;
         }
         if (info.warningMessage) {
             cell.toolTip = info.warningMessage;
@@ -120,7 +124,7 @@
     if ((NSUInteger)row >= source.count) return;
 
     TFNProcessedFileInfo *info = source[row];
-    if (info.status != TFNProcessingStatusCompleted) return;
+    if (info.status != TFNProcessingStatusCompleted && info.status != TFNProcessingStatusBase) return;
     if (!self.onRowSelected) return;
 
     NSRect rowRect = [tv rectOfRow:row];

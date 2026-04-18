@@ -96,15 +96,38 @@ NSString *const TFNFileIndexKey = @"TFNFileIndex";
     TFNMetalNormalizer *metalNorm = [[TFNMetalNormalizer alloc] init];
     BOOL useMetal = (metalNorm != nil);
 
-    // Compute base range
+    // Compute base range and histogram
     TFNExposureRange *baseRange = nil;
+    TFNHistogramData *baseHistogram = nil;
     if (useMetal) {
         baseRange = [metalNorm computeExposureRangeForImage:baseImage error:nil];
+        baseHistogram = metalNorm.beforeHistogram;
     }
     if (!baseRange) {
         [baseImage computeExposureRange];
         baseRange = baseImage.exposureRange;
+        baseHistogram = [TFNCPUNormalizer computeHistogramForPixelData:baseImage.pixelData
+                                                           pixelCount:baseImage.width * baseImage.height
+                                                         channelCount:baseImage.channelCount
+                                                             bitDepth:baseImage.bitDepth
+                                                              isFloat:baseImage.isFloat
+                                                                range:baseRange];
     }
+
+    // Add the base file as the first entry in the file list
+    TFNProcessedFileInfo *baseInfo = [[TFNProcessedFileInfo alloc] initWithFilePath:self.baseTIFFPath];
+    baseInfo.status = TFNProcessingStatusBase;
+    baseInfo.sourceRange = baseRange;
+    baseInfo.beforeHistogram = baseHistogram;
+    baseInfo.bitDepth = baseImage.bitDepth;
+    baseInfo.channelCount = baseImage.channelCount;
+    baseInfo.isFloat = baseImage.isFloat;
+    baseInfo.readTime = 0;
+    baseInfo.rangeTime = 0;
+    baseInfo.normalizeTime = 0;
+    baseInfo.writeTime = 0;
+    baseInfo.totalTime = 0;
+    [_files addObject:baseInfo];
 
     // Enumerate TIFF files
     NSArray<NSString *> *contents = [fm contentsOfDirectoryAtPath:self.inputDirectory error:nil];
@@ -125,7 +148,7 @@ NSString *const TFNFileIndexKey = @"TFNFileIndex";
         [_files addObject:info];
     }
 
-    _totalFiles = _files.count;
+    _totalFiles = _files.count - 1; // Exclude base from processing count
 
     // Determine output directory
     NSString *outputDir = nil;
@@ -145,7 +168,7 @@ NSString *const TFNFileIndexKey = @"TFNFileIndex";
                                                             object:self];
     });
 
-    if (_files.count == 0) {
+    if (_totalFiles == 0) {
         [self finishWithError:nil];
         return;
     }
@@ -165,7 +188,7 @@ NSString *const TFNFileIndexKey = @"TFNFileIndex";
 
     CFTimeInterval batchStart = CACurrentMediaTime();
 
-    for (NSUInteger i = 0; i < _files.count; i++) {
+    for (NSUInteger i = 1; i < _files.count; i++) { // Start at 1: skip base file entry
         if (_cancelled) break;
 
         TFNProcessedFileInfo *info = _files[i];

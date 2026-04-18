@@ -33,13 +33,13 @@ static NSString *const kInPlaceKey = @"TFNInPlace";
 
 - (instancetype)init {
     NSWindow *window = [[NSWindow alloc]
-        initWithContentRect:NSMakeRect(0, 0, 900, 600)
+        initWithContentRect:NSMakeRect(0, 0, 1050, 650)
                   styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
                             NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable
                     backing:NSBackingStoreBuffered
                       defer:NO];
     window.title = @"Tiffen";
-    window.minSize = NSMakeSize(700, 500);
+    window.minSize = NSMakeSize(850, 500);
     [window center];
 
     self = [super initWithWindow:window];
@@ -66,105 +66,145 @@ static NSString *const kInPlaceKey = @"TFNInPlace";
 
 - (void)setupUI {
     NSView *content = self.window.contentView;
-    content.wantsLayer = YES;
 
-    CGFloat y = content.bounds.size.height - 40;
-    CGFloat labelW = 80;
-    CGFloat fieldX = labelW + 20;
-    CGFloat btnW = 80;
+    // Use Auto Layout for proper resize behavior
+    // Helper to create a label
+    NSTextField *(^makeLabel)(NSString *) = ^NSTextField *(NSString *text) {
+        NSTextField *label = [NSTextField labelWithString:text];
+        label.alignment = NSTextAlignmentRight;
+        label.translatesAutoresizingMaskIntoConstraints = NO;
+        [label setContentHuggingPriority:NSLayoutPriorityDefaultHigh forOrientation:NSLayoutConstraintOrientationHorizontal];
+        return label;
+    };
+
+    // Helper to create a path field
+    NSTextField *(^makePathField)(void) = ^NSTextField * {
+        NSTextField *field = [[NSTextField alloc] init];
+        field.editable = NO;
+        field.selectable = YES;
+        field.placeholderString = @"No selection";
+        field.lineBreakMode = NSLineBreakByTruncatingMiddle;
+        field.translatesAutoresizingMaskIntoConstraints = NO;
+        return field;
+    };
+
+    // Helper to create a browse button
+    NSButton *(^makeButton)(NSString *, SEL) = ^NSButton *(NSString *title, SEL action) {
+        NSButton *btn = [[NSButton alloc] init];
+        btn.title = title;
+        btn.bezelStyle = NSBezelStyleRounded;
+        btn.target = self;
+        btn.action = action;
+        btn.translatesAutoresizingMaskIntoConstraints = NO;
+        [btn setContentHuggingPriority:NSLayoutPriorityDefaultHigh forOrientation:NSLayoutConstraintOrientationHorizontal];
+        return btn;
+    };
+
     CGFloat margin = 15;
 
-    // Base TIFF row
-    [self addLabel:@"Base TIFF:" at:NSMakePoint(margin, y) toView:content];
-    self.baseTIFFField = [self addPathField:NSMakeRect(fieldX, y, 620, 24) toView:content tag:1];
-    [self addButton:@"Browse..." at:NSMakePoint(fieldX + 630, y) action:@selector(browseBaseTIFF:) toView:content];
+    // --- Row 1: Base TIFF ---
+    NSTextField *baseLabel = makeLabel(@"Base TIFF:");
+    self.baseTIFFField = makePathField();
+    NSButton *baseBrowse = makeButton(@"Browse...", @selector(browseBaseTIFF:));
+    [content addSubview:baseLabel];
+    [content addSubview:self.baseTIFFField];
+    [content addSubview:baseBrowse];
 
-    // Input Dir row
-    y -= 34;
-    [self addLabel:@"Input Dir:" at:NSMakePoint(margin, y) toView:content];
-    self.inputDirField = [self addPathField:NSMakeRect(fieldX, y, 620, 24) toView:content tag:2];
-    [self addButton:@"Browse..." at:NSMakePoint(fieldX + 630, y) action:@selector(browseInputDirectory:) toView:content];
+    // --- Row 2: Input Dir ---
+    NSTextField *inputLabel = makeLabel(@"Input Dir:");
+    self.inputDirField = makePathField();
+    NSButton *inputBrowse = makeButton(@"Browse...", @selector(browseInputDirectory:));
+    [content addSubview:inputLabel];
+    [content addSubview:self.inputDirField];
+    [content addSubview:inputBrowse];
 
-    // Output row
-    y -= 34;
-    [self addLabel:@"Output:" at:NSMakePoint(margin, y) toView:content];
-    self.outputDirField = [self addPathField:NSMakeRect(fieldX, y, 620, 24) toView:content tag:3];
-    self.outputBrowseButton = [self addButton:@"Browse..." at:NSMakePoint(fieldX + 630, y) action:@selector(browseOutputDirectory:) toView:content];
+    // --- Row 3: Output ---
+    NSTextField *outputLabel = makeLabel(@"Output:");
+    self.outputDirField = makePathField();
+    self.outputBrowseButton = makeButton(@"Browse...", @selector(browseOutputDirectory:));
+    [content addSubview:outputLabel];
+    [content addSubview:self.outputDirField];
+    [content addSubview:self.outputBrowseButton];
 
-    // Normalize button + progress
-    y -= 44;
-    self.normalizeButton = [[NSButton alloc] initWithFrame:NSMakeRect(margin, y, 120, 32)];
+    // --- Normalize button + progress ---
+    self.normalizeButton = [[NSButton alloc] init];
     self.normalizeButton.title = @"Normalize";
     self.normalizeButton.bezelStyle = NSBezelStyleRounded;
     self.normalizeButton.target = self;
     self.normalizeButton.action = @selector(toggleNormalization:);
     self.normalizeButton.enabled = NO;
+    self.normalizeButton.translatesAutoresizingMaskIntoConstraints = NO;
     [content addSubview:self.normalizeButton];
 
-    self.progressLabel = [[NSTextField alloc] initWithFrame:NSMakeRect(560, y + 6, 240, 20)];
-    self.progressLabel.editable = NO;
-    self.progressLabel.bordered = NO;
-    self.progressLabel.backgroundColor = [NSColor clearColor];
+    self.progressLabel = [NSTextField labelWithString:@""];
     self.progressLabel.alignment = NSTextAlignmentRight;
-    self.progressLabel.stringValue = @"";
+    self.progressLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [content addSubview:self.progressLabel];
 
-    y -= 20;
-    self.progressBar = [[NSProgressIndicator alloc] initWithFrame:NSMakeRect(margin, y, 770, 6)];
+    self.progressBar = [[NSProgressIndicator alloc] init];
     self.progressBar.style = NSProgressIndicatorStyleBar;
     self.progressBar.indeterminate = NO;
     self.progressBar.minValue = 0;
     self.progressBar.doubleValue = 0;
     self.progressBar.hidden = YES;
+    self.progressBar.translatesAutoresizingMaskIntoConstraints = NO;
     [content addSubview:self.progressBar];
 
-    // Table view
-    y -= 14;
-    self.scrollView = [[NSScrollView alloc] initWithFrame:NSMakeRect(margin, 40, 770, y)];
+    // --- Table view ---
+    self.scrollView = [[NSScrollView alloc] init];
     self.scrollView.hasVerticalScroller = YES;
-    self.scrollView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+    self.scrollView.hasHorizontalScroller = YES;
+    self.scrollView.autohidesScrollers = YES;
+    self.scrollView.translatesAutoresizingMaskIntoConstraints = NO;
 
-    self.tableView = [[NSTableView alloc] initWithFrame:self.scrollView.bounds];
+    self.tableView = [[NSTableView alloc] init];
     self.tableView.headerView = [[NSTableHeaderView alloc] init];
     self.tableView.usesAlternatingRowBackgroundColors = YES;
+    self.tableView.columnAutoresizingStyle = NSTableViewLastColumnOnlyAutoresizingStyle;
 
     NSTableColumn *fileCol = [[NSTableColumn alloc] initWithIdentifier:@"file"];
     fileCol.title = @"File";
-    fileCol.width = 300;
+    fileCol.width = 280;
+    fileCol.minWidth = 120;
+    fileCol.resizingMask = NSTableColumnAutoresizingMask | NSTableColumnUserResizingMask;
     [self.tableView addTableColumn:fileCol];
 
     NSTableColumn *statusCol = [[NSTableColumn alloc] initWithIdentifier:@"status"];
     statusCol.title = @"Status";
     statusCol.width = 100;
+    statusCol.minWidth = 70;
     [self.tableView addTableColumn:statusCol];
 
     NSTableColumn *timeCol = [[NSTableColumn alloc] initWithIdentifier:@"totalTime"];
     timeCol.title = @"Time";
-    timeCol.width = 80;
+    timeCol.width = 70;
+    timeCol.minWidth = 50;
     [self.tableView addTableColumn:timeCol];
 
-    // Per-step timing columns (toggleable via TFNShowPerFileTiming)
     NSTableColumn *readCol = [[NSTableColumn alloc] initWithIdentifier:@"readTime"];
     readCol.title = @"Read";
-    readCol.width = 60;
+    readCol.width = 70;
+    readCol.minWidth = 50;
     [self.tableView addTableColumn:readCol];
 
     NSTableColumn *rangeCol = [[NSTableColumn alloc] initWithIdentifier:@"rangeTime"];
     rangeCol.title = @"Range";
-    rangeCol.width = 60;
+    rangeCol.width = 70;
+    rangeCol.minWidth = 50;
     [self.tableView addTableColumn:rangeCol];
 
     NSTableColumn *normCol = [[NSTableColumn alloc] initWithIdentifier:@"normalizeTime"];
     normCol.title = @"Norm";
-    normCol.width = 60;
+    normCol.width = 70;
+    normCol.minWidth = 50;
     [self.tableView addTableColumn:normCol];
 
     NSTableColumn *writeCol = [[NSTableColumn alloc] initWithIdentifier:@"writeTime"];
     writeCol.title = @"Write";
-    writeCol.width = 60;
+    writeCol.width = 70;
+    writeCol.minWidth = 50;
     [self.tableView addTableColumn:writeCol];
 
-    // Sort descriptors
     for (NSTableColumn *col in self.tableView.tableColumns) {
         col.sortDescriptorPrototype = [NSSortDescriptor sortDescriptorWithKey:col.identifier ascending:YES];
     }
@@ -174,16 +214,51 @@ static NSString *const kInPlaceKey = @"TFNInPlace";
     self.scrollView.documentView = self.tableView;
     [content addSubview:self.scrollView];
 
-    // Apply initial column visibility
     [self updateTimingColumnVisibility];
 
-    // Summary bar
-    self.summaryLabel = [[NSTextField alloc] initWithFrame:NSMakeRect(margin, 10, 770, 20)];
-    self.summaryLabel.editable = NO;
-    self.summaryLabel.bordered = NO;
-    self.summaryLabel.backgroundColor = [NSColor clearColor];
-    self.summaryLabel.stringValue = @"";
+    // --- Summary bar ---
+    self.summaryLabel = [NSTextField labelWithString:@""];
+    self.summaryLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [content addSubview:self.summaryLabel];
+
+    // --- Auto Layout Constraints ---
+    NSDictionary *views = NSDictionaryOfVariableBindings(
+        baseLabel, _baseTIFFField, baseBrowse,
+        inputLabel, _inputDirField, inputBrowse,
+        outputLabel, _outputDirField, _outputBrowseButton,
+        _normalizeButton, _progressLabel, _progressBar,
+        _scrollView, _summaryLabel);
+    NSDictionary *metrics = @{@"m": @(margin), @"lw": @80, @"rh": @24, @"sp": @8};
+
+    // Horizontal rows
+    [content addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
+        @"H:|-(m)-[baseLabel(lw)]-(sp)-[_baseTIFFField]-(sp)-[baseBrowse]-(m)-|"
+        options:NSLayoutFormatAlignAllCenterY metrics:metrics views:views]];
+    [content addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
+        @"H:|-(m)-[inputLabel(lw)]-(sp)-[_inputDirField]-(sp)-[inputBrowse]-(m)-|"
+        options:NSLayoutFormatAlignAllCenterY metrics:metrics views:views]];
+    [content addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
+        @"H:|-(m)-[outputLabel(lw)]-(sp)-[_outputDirField]-(sp)-[_outputBrowseButton]-(m)-|"
+        options:NSLayoutFormatAlignAllCenterY metrics:metrics views:views]];
+    [content addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
+        @"H:|-(m)-[_normalizeButton]-(>=sp)-[_progressLabel]-(m)-|"
+        options:NSLayoutFormatAlignAllCenterY metrics:metrics views:views]];
+    [content addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
+        @"H:|-(m)-[_progressBar]-(m)-|" options:0 metrics:metrics views:views]];
+    [content addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
+        @"H:|-(m)-[_scrollView]-(m)-|" options:0 metrics:metrics views:views]];
+    [content addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
+        @"H:|-(m)-[_summaryLabel]-(m)-|" options:0 metrics:metrics views:views]];
+
+    // Vertical layout: top rows pinned to top, table fills remaining space, summary at bottom
+    [content addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
+        @"V:|-(m)-[baseLabel(rh)]-(sp)-[inputLabel(rh)]-(sp)-[outputLabel(rh)]-(12)-[_normalizeButton(32)]-(4)-[_progressBar(6)]-(8)-[_scrollView]-(4)-[_summaryLabel(20)]-(8)-|"
+        options:0 metrics:metrics views:views]];
+
+    // Align path field heights
+    [self.baseTIFFField.heightAnchor constraintEqualToConstant:24].active = YES;
+    [self.inputDirField.heightAnchor constraintEqualToConstant:24].active = YES;
+    [self.outputDirField.heightAnchor constraintEqualToConstant:24].active = YES;
 
     // Register drag-and-drop on path fields
     [self.baseTIFFField registerForDraggedTypes:@[NSPasteboardTypeFileURL]];
@@ -191,35 +266,6 @@ static NSString *const kInPlaceKey = @"TFNInPlace";
     [self.outputDirField registerForDraggedTypes:@[NSPasteboardTypeFileURL]];
 }
 
-- (NSTextField *)addPathField:(NSRect)frame toView:(NSView *)view tag:(NSInteger)tag {
-    NSTextField *field = [[NSTextField alloc] initWithFrame:frame];
-    field.editable = NO;
-    field.selectable = YES;
-    field.placeholderString = @"No selection";
-    field.tag = tag;
-    [view addSubview:field];
-    return field;
-}
-
-- (void)addLabel:(NSString *)text at:(NSPoint)pt toView:(NSView *)view {
-    NSTextField *label = [[NSTextField alloc] initWithFrame:NSMakeRect(pt.x, pt.y, 80, 20)];
-    label.stringValue = text;
-    label.editable = NO;
-    label.bordered = NO;
-    label.backgroundColor = [NSColor clearColor];
-    label.alignment = NSTextAlignmentRight;
-    [view addSubview:label];
-}
-
-- (NSButton *)addButton:(NSString *)title at:(NSPoint)pt action:(SEL)action toView:(NSView *)view {
-    NSButton *btn = [[NSButton alloc] initWithFrame:NSMakeRect(pt.x, pt.y, 80, 24)];
-    btn.title = title;
-    btn.bezelStyle = NSBezelStyleRounded;
-    btn.target = self;
-    btn.action = action;
-    [view addSubview:btn];
-    return btn;
-}
 
 #pragma mark - Notifications
 

@@ -10,7 +10,8 @@ typedef NS_ENUM(NSInteger, TFNProcessingStatus) {
     TFNProcessingStatusProcessing,
     TFNProcessingStatusCompleted,
     TFNProcessingStatusError,
-    TFNProcessingStatusSkipped
+    TFNProcessingStatusSkipped,
+    TFNProcessingStatusBase       // Base reference file (copied as-is)
 };
 
 /// Per-file processing result displayed in the file list.

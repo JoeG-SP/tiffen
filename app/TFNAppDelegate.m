@@ -5,6 +5,10 @@
 @implementation TFNAppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
+    // Ensure the app appears in the dock and has a menu bar
+    [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
+    [NSApp activateIgnoringOtherApps:YES];
+
     // Register default preferences
     [[NSUserDefaults standardUserDefaults] registerDefaults:@{
         @"TFNLastBaseTIFFPath": @"",
