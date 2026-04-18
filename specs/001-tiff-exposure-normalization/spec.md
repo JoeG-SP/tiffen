@@ -29,8 +29,9 @@ and verifying output files match the base exposure range.
    arguments, **Then** 4 normalized TIFF files are written to the
    output location with exposure ranges matching the base.
 2. **Given** a directory containing the base TIFF itself,
-   **When** normalization runs, **Then** the base file is skipped
-   (not re-processed) or output unchanged.
+   **When** normalization runs, **Then** the base file is copied
+   as-is to the output directory (not re-normalized), and the
+   output directory contains all files including the base.
 3. **Given** a base TIFF and directory with mixed bit depths (8-bit
    and 16-bit), **When** normalization runs, **Then** each output
    retains its original bit depth while matching the base exposure
@@ -119,7 +120,10 @@ file is reported on stderr while valid files are normalized.
 - **FR-003**: System MUST re-map pixel values in each target TIFF so
   the output exposure range matches the base TIFF range.
 - **FR-004**: System MUST write normalized files to an output
-  directory, preserving original filenames.
+  directory, preserving original filenames. The base TIFF MUST
+  be copied into the output directory as-is (not re-normalized)
+  so the output directory contains the complete set of files.
+  This copy is skipped in `--in-place` mode.
 - **FR-005**: System MUST preserve the original bit depth, channel
   count, and compression scheme of each input TIFF in the output.
 - **FR-006**: System MUST skip non-TIFF files in the target directory

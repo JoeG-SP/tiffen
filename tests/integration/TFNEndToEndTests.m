@@ -54,8 +54,7 @@
                                 baseImage.exposureRange.maxValues[0], 1.0f);
 }
 
-- (void)testBaseFileSkipped {
-    // Put base file inside the input directory — it should be skipped
+- (void)testBaseFileCopiedToOutput {
     NSString *basePath = [self.fixturesDir stringByAppendingPathComponent:@"base_8bit.tiff"];
     NSString *outputDir = [self.fixturesDir stringByAppendingPathComponent:@"output"];
 
@@ -70,9 +69,29 @@
                                                         error:&error];
     XCTAssertNotNil(result);
 
-    // base_8bit.tiff should NOT appear in output
+    // base_8bit.tiff should be copied to output as the baseline
     NSFileManager *fm = [NSFileManager defaultManager];
-    XCTAssertFalse([fm fileExistsAtPath:[outputDir stringByAppendingPathComponent:@"base_8bit.tiff"]]);
+    XCTAssertTrue([fm fileExistsAtPath:[outputDir stringByAppendingPathComponent:@"base_8bit.tiff"]]);
+}
+
+- (void)testBaseFileNotNormalized {
+    // Base file should be copied as-is, not re-normalized
+    NSString *basePath = [self.fixturesDir stringByAppendingPathComponent:@"base_8bit.tiff"];
+    NSString *outputDir = [self.fixturesDir stringByAppendingPathComponent:@"output"];
+
+    TFNNormalizer *norm = [[TFNNormalizer alloc] init];
+    norm.outputMode = TFNOutputModeDirectory;
+    norm.outputDirectory = outputDir;
+    norm.verbosity = TFNVerbosityQuiet;
+
+    NSError *error = nil;
+    [norm normalizeDirectory:self.fixturesDir withBaseTIFF:basePath error:&error];
+
+    // Copied base should be byte-identical to original
+    NSData *original = [NSData dataWithContentsOfFile:basePath];
+    NSData *copied = [NSData dataWithContentsOfFile:
+        [outputDir stringByAppendingPathComponent:@"base_8bit.tiff"]];
+    XCTAssertEqualObjects(original, copied);
 }
 
 - (void)testBitDepthPreserved {

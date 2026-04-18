@@ -46,6 +46,9 @@ Normalizing 47 files to match base: photo_001.tiff
 Done: 46 normalized, 0 errors, 1 skipped
 ```
 
+The base file (`photo_001.tiff`) is copied as-is into the output
+directory so it contains the complete set.
+
 **stderr** (errors):
 ```
 Error: photo_025.tiff: corrupt TIFF header (skipping)
@@ -64,7 +67,7 @@ Normalizing 47 files to match base: photo_001.tiff (in-place)
 - `--verbose` and `--quiet` are mutually exclusive (error if both provided, exit code 2)
 - `<base-tiff>` MUST exist and be a valid TIFF (exit code 2 if not)
 - `<input-directory>` MUST exist and be a directory (exit code 2 if not)
-- If `<base-tiff>` is inside `<input-directory>`, it is skipped during normalization
+- If `<base-tiff>` is inside `<input-directory>`, it is not re-normalized but is copied as-is to the output directory (skipped in `--in-place` mode)
 
 ## Warnings (stderr)
 

@@ -80,6 +80,7 @@ Discovered → Loading → Loaded → Computing Range → Normalizing → Writin
                                                                        → Error (at any step)
 ```
 
+- **Base (copied)**: Base TIFF copied as-is to output directory (directory mode only)
 - **Discovered**: File path found during directory enumeration
 - **Loading**: libtiff is reading the file into a TFNTIFFImage
 - **Loaded**: Pixel data in memory, metadata populated

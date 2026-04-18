@@ -112,6 +112,22 @@ NSString *const TFNNormalizerErrorDomain = @"TFNNormalizerErrorDomain";
         }
     }
 
+    // Copy base file into output directory (not needed for in-place mode)
+    if (self.outputMode == TFNOutputModeDirectory) {
+        NSString *baseDst = [outputDir stringByAppendingPathComponent:
+            baseTIFFPath.lastPathComponent];
+        NSError *copyError = nil;
+        if (![fm copyItemAtPath:baseTIFFPath toPath:baseDst error:&copyError]) {
+            if (error) {
+                *error = [NSError errorWithDomain:TFNNormalizerErrorDomain code:2
+                            userInfo:@{NSLocalizedDescriptionKey:
+                                [NSString stringWithFormat:@"Cannot copy base TIFF: %@",
+                                 copyError.localizedDescription]}];
+            }
+            return nil;
+        }
+    }
+
     TFNNormalizationResult *result = [[TFNNormalizationResult alloc] init];
     result.filesSkipped = skippedNonTIFF;
 
