@@ -122,4 +122,60 @@
     }
 }
 
++ (TFNHistogramData *)computeHistogramForPixelData:(const void *)pixelData
+                                        pixelCount:(NSUInteger)pixelCount
+                                      channelCount:(NSUInteger)channelCount
+                                          bitDepth:(NSUInteger)bitDepth
+                                           isFloat:(BOOL)isFloat
+                                             range:(nullable TFNExposureRange *)range {
+    NSUInteger totalBins = channelCount * TFN_HISTOGRAM_BIN_COUNT;
+    uint32_t *counts = calloc(totalBins, sizeof(uint32_t));
+
+    for (NSUInteger i = 0; i < pixelCount; i++) {
+        for (NSUInteger c = 0; c < channelCount; c++) {
+            NSUInteger idx = i * channelCount + c;
+            float val;
+
+            if (isFloat && bitDepth == 32) {
+                val = ((const float *)pixelData)[idx];
+            } else if (bitDepth == 8) {
+                val = (float)((const uint8_t *)pixelData)[idx];
+            } else if (bitDepth == 16) {
+                val = (float)((const uint16_t *)pixelData)[idx];
+            } else if (bitDepth == 32) {
+                val = (float)((const uint32_t *)pixelData)[idx];
+            } else {
+                continue;
+            }
+
+            uint32_t bin;
+            if (isFloat && bitDepth == 32) {
+                float rangeMin = range ? range.minValues[c] : 0.0f;
+                float rangeMax = range ? range.maxValues[c] : 1.0f;
+                float span = rangeMax - rangeMin;
+                if (span > 0) {
+                    float t = (val - rangeMin) / span;
+                    bin = (uint32_t)fminf(fmaxf(t * 255.0f, 0.0f), 255.0f);
+                } else {
+                    bin = 0;
+                }
+            } else if (bitDepth == 8) {
+                bin = (uint32_t)fminf(fmaxf(val, 0.0f), 255.0f);
+            } else if (bitDepth == 16) {
+                bin = (uint32_t)fminf(fmaxf(val * 255.0f / 65535.0f, 0.0f), 255.0f);
+            } else {
+                bin = (uint32_t)fminf(fmaxf(val * 255.0f / 4294967295.0f, 0.0f), 255.0f);
+            }
+
+            counts[c * TFN_HISTOGRAM_BIN_COUNT + bin]++;
+        }
+    }
+
+    TFNHistogramData *hist = [TFNHistogramData histogramFromRawCounts:counts
+                                                         channelCount:channelCount
+                                                          totalPixels:pixelCount];
+    free(counts);
+    return hist;
+}
+
 @end

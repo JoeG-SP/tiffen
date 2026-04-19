@@ -1,4 +1,5 @@
 #import "TFNMetalNormalizer.h"
+#import "TFNHistogramData.h"
 #include <mach-o/dyld.h>
 #include <limits.h>
 
@@ -34,6 +35,9 @@ typedef struct {
     id<MTLComputePipelineState> _minmaxFloat32;
 }
 
+@synthesize beforeHistogram = _beforeHistogram;
+@synthesize afterHistogram = _afterHistogram;
+
 - (nullable instancetype)init {
     self = [super init];
     if (self) {
@@ -44,10 +48,23 @@ typedef struct {
         if (!_commandQueue) return nil;
 
         NSError *libError = nil;
-        _library = [_device newDefaultLibrary];
+
+        // Load metallib from the TiffenCore framework bundle.
+        // This works for both CLI (framework embedded beside executable)
+        // and GUI (framework embedded in app bundle).
+        NSBundle *frameworkBundle = [NSBundle bundleForClass:[self class]];
+        NSString *bundlePath = [frameworkBundle pathForResource:@"default"
+                                                        ofType:@"metallib"];
+        if (bundlePath) {
+            NSURL *libURL = [NSURL fileURLWithPath:bundlePath];
+            _library = [_device newLibraryWithURL:libURL error:&libError];
+        }
         if (!_library) {
-            // For command-line tools, newDefaultLibrary won't work.
-            // Find metallib next to the executable using _NSGetExecutablePath.
+            // Fallback: default library (works in test bundles)
+            _library = [_device newDefaultLibrary];
+        }
+        if (!_library) {
+            // Last resort: find metallib next to executable
             char pathBuf[PATH_MAX];
             uint32_t pathSize = sizeof(pathBuf);
             if (_NSGetExecutablePath(pathBuf, &pathSize) == 0) {
@@ -59,15 +76,6 @@ typedef struct {
                     NSURL *libURL = [NSURL fileURLWithPath:libPath];
                     _library = [_device newLibraryWithURL:libURL error:&libError];
                 }
-            }
-        }
-        if (!_library) {
-            // Last resort: try NSBundle mainBundle
-            NSString *bundlePath = [[NSBundle mainBundle] pathForResource:@"default"
-                                                                  ofType:@"metallib"];
-            if (bundlePath) {
-                NSURL *libURL = [NSURL fileURLWithPath:bundlePath];
-                _library = [_device newLibraryWithURL:libURL error:&libError];
             }
         }
         if (!_library) return nil;
@@ -176,6 +184,15 @@ typedef struct {
     metalParams.isFloat = image.isFloat ? 1 : 0;
     metalParams.pixelCount = (uint32_t)pixelCount;
 
+    // Allocate histogram buffer for "before" histogram (fused into minmax pass).
+    // For float32, histogram is deferred until after range is known.
+    NSUInteger channels = MIN(image.channelCount, 4u);
+    NSUInteger histBufSize = channels * TFN_HISTOGRAM_BIN_COUNT * sizeof(uint32_t);
+    id<MTLBuffer> histBuffer =
+        [_device newBufferWithLength:histBufSize
+                             options:MTLResourceStorageModeShared];
+    memset(histBuffer.contents, 0, histBufSize);
+
     // Dispatch
     id<MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
     id<MTLComputeCommandEncoder> encoder = [commandBuffer computeCommandEncoder];
@@ -184,6 +201,7 @@ typedef struct {
     [encoder setBuffer:pixelBuffer offset:0 atIndex:0];
     [encoder setBuffer:resultsBuffer offset:0 atIndex:1];
     [encoder setBytes:&metalParams length:sizeof(metalParams) atIndex:2];
+    [encoder setBuffer:histBuffer offset:0 atIndex:3];
 
     MTLSize threadsPerGroup = MTLSizeMake(tgSize, 1, 1);
     MTLSize gridSize = MTLSizeMake(numGroups * tgSize, 1, 1);
@@ -201,7 +219,6 @@ typedef struct {
 
     // Final reduction on CPU over threadgroup results
     MetalMinMaxResult *gpuResults = (MetalMinMaxResult *)resultsBuffer.contents;
-    NSUInteger channels = MIN(image.channelCount, 4u);
     float mins[4], maxs[4];
     for (NSUInteger c = 0; c < channels; c++) {
         mins[c] = FLT_MAX;
@@ -213,6 +230,35 @@ typedef struct {
             if (gpuResults[g].mins[c] < mins[c]) mins[c] = gpuResults[g].mins[c];
             if (gpuResults[g].maxs[c] > maxs[c]) maxs[c] = gpuResults[g].maxs[c];
         }
+    }
+
+    // Build before histogram from GPU atomic counts.
+    // For integer types, the histogram was fused into the minmax pass.
+    // For float32, compute on CPU since we needed the range first.
+    if (image.isFloat && image.bitDepth == 32) {
+        // CPU histogram for float32 using now-known range
+        uint32_t *cpuCounts = calloc(channels * TFN_HISTOGRAM_BIN_COUNT, sizeof(uint32_t));
+        const float *pixels = (const float *)image.pixelData;
+        for (NSUInteger i = 0; i < pixelCount; i++) {
+            for (NSUInteger c = 0; c < channels; c++) {
+                float val = pixels[i * channels + c];
+                float range = maxs[c] - mins[c];
+                uint32_t bin = 0;
+                if (range > 0) {
+                    float t = (val - mins[c]) / range;
+                    bin = (uint32_t)fminf(fmaxf(t * 255.0f, 0.0f), 255.0f);
+                }
+                cpuCounts[c * TFN_HISTOGRAM_BIN_COUNT + bin]++;
+            }
+        }
+        _beforeHistogram = [TFNHistogramData histogramFromRawCounts:cpuCounts
+                                                       channelCount:channels
+                                                        totalPixels:pixelCount];
+        free(cpuCounts);
+    } else {
+        _beforeHistogram = [TFNHistogramData histogramFromRawCounts:histBuffer.contents
+                                                       channelCount:channels
+                                                        totalPixels:pixelCount];
     }
 
     return [[TFNExposureRange alloc] initWithChannelCount:channels
@@ -279,6 +325,13 @@ typedef struct {
     metalParams.isFloat = image.isFloat ? 1 : 0;
     metalParams.pixelCount = (uint32_t)pixelCount;
 
+    // Allocate after-histogram buffer
+    NSUInteger histBufSize = channels * TFN_HISTOGRAM_BIN_COUNT * sizeof(uint32_t);
+    id<MTLBuffer> afterHistBuffer =
+        [_device newBufferWithLength:histBufSize
+                             options:MTLResourceStorageModeShared];
+    memset(afterHistBuffer.contents, 0, histBufSize);
+
     // Dispatch compute
     id<MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
     id<MTLComputeCommandEncoder> encoder = [commandBuffer computeCommandEncoder];
@@ -286,6 +339,7 @@ typedef struct {
     [encoder setComputePipelineState:pipeline];
     [encoder setBuffer:pixelBuffer offset:0 atIndex:0];
     [encoder setBytes:&metalParams length:sizeof(metalParams) atIndex:1];
+    [encoder setBuffer:afterHistBuffer offset:0 atIndex:2];
 
     NSUInteger threadGroupSize = pipeline.maxTotalThreadsPerThreadgroup;
     if (threadGroupSize > pixelCount) {
@@ -310,6 +364,49 @@ typedef struct {
     // If we used a copy buffer, copy data back
     if (pixelBuffer.contents != image.pixelData) {
         memcpy(image.pixelData, pixelBuffer.contents, image.pixelDataLength);
+    }
+
+    // Build after histogram.
+    // For float32, the normalize kernel doesn't compute histogram (needs range info).
+    // Compute on CPU from the output buffer.
+    if (image.isFloat && image.bitDepth == 32) {
+        uint32_t *cpuCounts = calloc(channels * TFN_HISTOGRAM_BIN_COUNT, sizeof(uint32_t));
+        const float *pixels = (const float *)image.pixelData;
+        // After normalization, pixels are in base range. Use params to reconstruct range.
+        // base_min = offset[c] (when src_min=0 for the base itself, but generally
+        // we need the actual base range). For simplicity, scan for actual min/max.
+        float outMins[4], outMaxs[4];
+        for (NSUInteger c = 0; c < channels; c++) {
+            outMins[c] = FLT_MAX;
+            outMaxs[c] = -FLT_MAX;
+        }
+        for (NSUInteger i = 0; i < pixelCount; i++) {
+            for (NSUInteger c = 0; c < channels; c++) {
+                float v = pixels[i * channels + c];
+                if (v < outMins[c]) outMins[c] = v;
+                if (v > outMaxs[c]) outMaxs[c] = v;
+            }
+        }
+        for (NSUInteger i = 0; i < pixelCount; i++) {
+            for (NSUInteger c = 0; c < channels; c++) {
+                float val = pixels[i * channels + c];
+                float range = outMaxs[c] - outMins[c];
+                uint32_t bin = 0;
+                if (range > 0) {
+                    float t = (val - outMins[c]) / range;
+                    bin = (uint32_t)fminf(fmaxf(t * 255.0f, 0.0f), 255.0f);
+                }
+                cpuCounts[c * TFN_HISTOGRAM_BIN_COUNT + bin]++;
+            }
+        }
+        _afterHistogram = [TFNHistogramData histogramFromRawCounts:cpuCounts
+                                                      channelCount:channels
+                                                       totalPixels:pixelCount];
+        free(cpuCounts);
+    } else {
+        _afterHistogram = [TFNHistogramData histogramFromRawCounts:afterHistBuffer.contents
+                                                      channelCount:channels
+                                                       totalPixels:pixelCount];
     }
 
     return YES;

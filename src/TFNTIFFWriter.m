@@ -3,12 +3,22 @@
 
 NSString *const TFNTIFFWriterErrorDomain = @"TFNTIFFWriterErrorDomain";
 
+static NSString *_lastTIFFError = nil;
+
+static void tiffErrorHandler(const char *module, const char *fmt, va_list ap) {
+    char buf[1024];
+    vsnprintf(buf, sizeof(buf), fmt, ap);
+    _lastTIFFError = [NSString stringWithUTF8String:buf];
+}
+
 @implementation TFNTIFFWriter
 
 + (BOOL)writeImage:(TFNTIFFImage *)image
             toPath:(NSString *)path
              error:(NSError **)error {
     TIFFSetWarningHandler(NULL);
+    TIFFSetErrorHandler(tiffErrorHandler);
+    _lastTIFFError = nil;
 
     TIFF *tif = TIFFOpen([path fileSystemRepresentation], "w");
     if (!tif) {
@@ -59,12 +69,13 @@ NSString *const TFNTIFFWriterErrorDomain = @"TFNTIFFWriterErrorDomain";
         void *rowPtr = (uint8_t *)image.pixelData + row * rowBytes;
         if (TIFFWriteScanline(tif, rowPtr, row, 0) < 0) {
             if (error) {
+                NSString *detail = _lastTIFFError ?: @"unknown error";
                 *error = [NSError errorWithDomain:TFNTIFFWriterErrorDomain
                                              code:2
                                          userInfo:@{NSLocalizedDescriptionKey:
                                              [NSString stringWithFormat:
-                                              @"Error writing row %u to %@",
-                                              row, path.lastPathComponent]}];
+                                              @"Error writing row %u to %@: %@",
+                                              row, path.lastPathComponent, detail]}];
             }
             TIFFClose(tif);
             return NO;
