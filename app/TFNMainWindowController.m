@@ -11,7 +11,7 @@ static NSString *const kInputDirKey = @"TFNLastInputDirectory";
 static NSString *const kOutputDirKey = @"TFNLastOutputDirectory";
 static NSString *const kInPlaceKey = @"TFNInPlace";
 
-@interface TFNMainWindowController () <NSDraggingDestination>
+@interface TFNMainWindowController () <NSDraggingDestination, NSTextFieldDelegate>
 
 @property (nonatomic, strong) NSTextField *baseTIFFField;
 @property (nonatomic, strong) NSTextField *inputDirField;
@@ -80,13 +80,15 @@ static NSString *const kInPlaceKey = @"TFNInPlace";
     };
 
     // Helper to create a path field
-    NSTextField *(^makePathField)(void) = ^NSTextField * {
+    NSTextField *(^makePathField)(NSInteger) = ^NSTextField *(NSInteger tag) {
         NSTextField *field = [[NSTextField alloc] init];
-        field.editable = NO;
+        field.editable = YES;
         field.selectable = YES;
-        field.placeholderString = @"No selection";
+        field.placeholderString = @"Type or browse for a path";
         field.lineBreakMode = NSLineBreakByTruncatingMiddle;
         field.translatesAutoresizingMaskIntoConstraints = NO;
+        field.tag = tag;
+        field.delegate = self;
         return field;
     };
 
@@ -106,7 +108,7 @@ static NSString *const kInPlaceKey = @"TFNInPlace";
 
     // --- Row 1: Base TIFF ---
     NSTextField *baseLabel = makeLabel(@"Base TIFF:");
-    self.baseTIFFField = makePathField();
+    self.baseTIFFField = makePathField(1);
     NSButton *baseBrowse = makeButton(@"Browse...", @selector(browseBaseTIFF:));
     [content addSubview:baseLabel];
     [content addSubview:self.baseTIFFField];
@@ -114,7 +116,7 @@ static NSString *const kInPlaceKey = @"TFNInPlace";
 
     // --- Row 2: Input Dir ---
     NSTextField *inputLabel = makeLabel(@"Input Dir:");
-    self.inputDirField = makePathField();
+    self.inputDirField = makePathField(2);
     NSButton *inputBrowse = makeButton(@"Browse...", @selector(browseInputDirectory:));
     [content addSubview:inputLabel];
     [content addSubview:self.inputDirField];
@@ -122,7 +124,7 @@ static NSString *const kInPlaceKey = @"TFNInPlace";
 
     // --- Row 3: Output ---
     NSTextField *outputLabel = makeLabel(@"Output:");
-    self.outputDirField = makePathField();
+    self.outputDirField = makePathField(3);
     self.outputBrowseButton = makeButton(@"Browse...", @selector(browseOutputDirectory:));
     [content addSubview:outputLabel];
     [content addSubview:self.outputDirField];
@@ -401,6 +403,40 @@ static NSString *const kInPlaceKey = @"TFNInPlace";
         self.outputDirField.stringValue = path;
         self.outputDirField.toolTip = path;
         self.engine.outputDirectory = path;
+        [[NSUserDefaults standardUserDefaults] setObject:path forKey:kOutputDirKey];
+    }
+}
+
+#pragma mark - Text Field Editing
+
+- (void)controlTextDidEndEditing:(NSNotification *)notification {
+    NSTextField *field = notification.object;
+    NSString *path = [field.stringValue stringByExpandingTildeInPath];
+
+    if (field.tag == 1) {
+        // Base TIFF
+        self.engine.baseTIFFPath = path;
+        field.toolTip = path;
+        [[NSUserDefaults standardUserDefaults] setObject:path forKey:kBaseTIFFKey];
+        [self updateNormalizeButtonState];
+    } else if (field.tag == 2) {
+        // Input directory
+        self.engine.inputDirectory = path;
+        field.toolTip = path;
+        [[NSUserDefaults standardUserDefaults] setObject:path forKey:kInputDirKey];
+        // Auto-update output
+        if (![[NSUserDefaults standardUserDefaults] boolForKey:kInPlaceKey]) {
+            NSString *outPath = [path stringByAppendingPathComponent:@"normalized"];
+            self.outputDirField.stringValue = outPath;
+            self.outputDirField.toolTip = outPath;
+            self.engine.outputDirectory = outPath;
+            [[NSUserDefaults standardUserDefaults] setObject:outPath forKey:kOutputDirKey];
+        }
+        [self updateNormalizeButtonState];
+    } else if (field.tag == 3) {
+        // Output directory
+        self.engine.outputDirectory = path;
+        field.toolTip = path;
         [[NSUserDefaults standardUserDefaults] setObject:path forKey:kOutputDirKey];
     }
 }
