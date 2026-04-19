@@ -26,6 +26,8 @@ static NSString *const kInPlaceKey = @"TFNInPlace";
 @property (nonatomic, strong) TFNFileListDataSource *dataSource;
 @property (nonatomic, strong) TFNProcessingEngine *engine;
 @property (nonatomic, strong) NSPopover *histogramPopover;
+@property (nonatomic, strong) NSWindow *histogramWindow;
+@property (nonatomic, strong) TFNProcessedFileInfo *currentHistogramFile;
 
 @end
 
@@ -567,48 +569,63 @@ static NSString *const kInPlaceKey = @"TFNInPlace";
     };
 }
 
-- (void)showHistogramForFile:(TFNProcessedFileInfo *)info atRect:(NSRect)rowRect {
-    if (!info.beforeHistogram && !info.afterHistogram) return;
+- (NSView *)buildHistogramContentForFile:(TFNProcessedFileInfo *)info
+                                    size:(NSSize)size
+                           includeExpand:(BOOL)includeExpand {
+    NSView *contentView = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, size.width, size.height)];
+    CGFloat m = 10;
+    CGFloat topY = size.height - m;
 
-    [self.histogramPopover close];
-
-    // Build content view
-    NSView *contentView = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 480, 300)];
-
-    // Title
-    NSTextField *titleLabel = [[NSTextField alloc] initWithFrame:NSMakeRect(10, 270, 460, 20)];
-    titleLabel.stringValue = [NSString stringWithFormat:@"%@ — Histogram", info.fileName];
+    // Title row with expand button
+    NSTextField *titleLabel = [NSTextField labelWithString:
+        [NSString stringWithFormat:@"%@ — Histogram", info.fileName]];
     titleLabel.font = [NSFont boldSystemFontOfSize:13];
-    titleLabel.editable = NO;
-    titleLabel.bordered = NO;
-    titleLabel.backgroundColor = [NSColor clearColor];
+    titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [contentView addSubview:titleLabel];
 
+    NSButton *expandBtn = nil;
+    if (includeExpand) {
+        expandBtn = [[NSButton alloc] init];
+        expandBtn.image = [NSImage imageWithSystemSymbolName:@"arrow.up.left.and.arrow.down.right"
+                                    accessibilityDescription:@"Expand"];
+        expandBtn.bezelStyle = NSBezelStyleInline;
+        expandBtn.bordered = NO;
+        expandBtn.target = self;
+        expandBtn.action = @selector(expandHistogramToWindow:);
+        expandBtn.toolTip = @"Open in resizable window";
+        expandBtn.translatesAutoresizingMaskIntoConstraints = NO;
+        [expandBtn setContentHuggingPriority:NSLayoutPriorityRequired
+                              forOrientation:NSLayoutConstraintOrientationHorizontal];
+        [contentView addSubview:expandBtn];
+    }
+
     // Before histogram
-    TFNHistogramView *beforeView = [[TFNHistogramView alloc] initWithFrame:NSMakeRect(10, 60, 220, 200)];
+    TFNHistogramView *beforeView = [[TFNHistogramView alloc] init];
     beforeView.histogramData = info.beforeHistogram;
     beforeView.title = @"Before";
+    beforeView.translatesAutoresizingMaskIntoConstraints = NO;
     [contentView addSubview:beforeView];
 
     // After histogram
-    TFNHistogramView *afterView = [[TFNHistogramView alloc] initWithFrame:NSMakeRect(250, 60, 220, 200)];
+    TFNHistogramView *afterView = [[TFNHistogramView alloc] init];
     afterView.histogramData = info.afterHistogram;
-    afterView.title = @"After";
+    afterView.title = info.afterHistogram ? @"After" : @"(base reference)";
+    afterView.translatesAutoresizingMaskIntoConstraints = NO;
     [contentView addSubview:afterView];
 
     // Range label
     NSString *rangeStr = @"";
     if (info.sourceRange && info.normalizedRange) {
-        rangeStr = [NSString stringWithFormat:@"Range: [%.1f, %.1f] → [%.1f, %.1f]",
+        rangeStr = [NSString stringWithFormat:@"Range: [%.1f, %.1f] \u2192 [%.1f, %.1f]",
             info.sourceRange.minValues[0], info.sourceRange.maxValues[0],
             info.normalizedRange.minValues[0], info.normalizedRange.maxValues[0]];
+    } else if (info.sourceRange) {
+        rangeStr = [NSString stringWithFormat:@"Range: [%.1f, %.1f]",
+            info.sourceRange.minValues[0], info.sourceRange.maxValues[0]];
     }
-    NSTextField *rangeLabel = [[NSTextField alloc] initWithFrame:NSMakeRect(10, 35, 460, 16)];
-    rangeLabel.stringValue = rangeStr;
+    NSTextField *rangeLabel = [NSTextField labelWithString:rangeStr];
     rangeLabel.font = [NSFont systemFontOfSize:11];
-    rangeLabel.editable = NO;
-    rangeLabel.bordered = NO;
-    rangeLabel.backgroundColor = [NSColor clearColor];
+    rangeLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [contentView addSubview:rangeLabel];
 
     // Metadata label
@@ -616,16 +633,55 @@ static NSString *const kInPlaceKey = @"TFNInPlace";
         (unsigned long)info.bitDepth,
         info.isFloat ? @" float" : @"",
         (unsigned long)info.channelCount];
-    NSTextField *metaLabel = [[NSTextField alloc] initWithFrame:NSMakeRect(10, 15, 460, 16)];
-    metaLabel.stringValue = metaStr;
+    NSTextField *metaLabel = [NSTextField labelWithString:metaStr];
     metaLabel.font = [NSFont systemFontOfSize:11];
     metaLabel.textColor = [NSColor secondaryLabelColor];
-    metaLabel.editable = NO;
-    metaLabel.bordered = NO;
-    metaLabel.backgroundColor = [NSColor clearColor];
+    metaLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [contentView addSubview:metaLabel];
 
-    // Create popover
+    // Auto Layout
+    NSDictionary *views;
+    if (expandBtn) {
+        views = NSDictionaryOfVariableBindings(titleLabel, expandBtn, beforeView, afterView, rangeLabel, metaLabel);
+        [contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
+            @"H:|-(m)-[titleLabel]-(>=4)-[expandBtn(20)]-(m)-|"
+            options:NSLayoutFormatAlignAllCenterY metrics:@{@"m": @(m)} views:views]];
+    } else {
+        views = NSDictionaryOfVariableBindings(titleLabel, beforeView, afterView, rangeLabel, metaLabel);
+        [contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
+            @"H:|-(m)-[titleLabel]-(m)-|"
+            options:0 metrics:@{@"m": @(m)} views:views]];
+    }
+
+    // Histograms side by side, equal width
+    [contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
+        @"H:|-(m)-[beforeView]-(m)-[afterView(==beforeView)]-(m)-|"
+        options:0 metrics:@{@"m": @(m)} views:views]];
+    [contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
+        @"H:|-(m)-[rangeLabel]-(m)-|" options:0 metrics:@{@"m": @(m)} views:views]];
+    [contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
+        @"H:|-(m)-[metaLabel]-(m)-|" options:0 metrics:@{@"m": @(m)} views:views]];
+
+    [contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:
+        @"V:|-(m)-[titleLabel(20)]-(8)-[beforeView(>=100)]-(6)-[rangeLabel(16)]-(2)-[metaLabel(16)]-(m)-|"
+        options:0 metrics:@{@"m": @(m)} views:views]];
+    // afterView same vertical position and height as beforeView
+    [afterView.topAnchor constraintEqualToAnchor:beforeView.topAnchor].active = YES;
+    [afterView.bottomAnchor constraintEqualToAnchor:beforeView.bottomAnchor].active = YES;
+
+    return contentView;
+}
+
+- (void)showHistogramForFile:(TFNProcessedFileInfo *)info atRect:(NSRect)rowRect {
+    if (!info.beforeHistogram && !info.afterHistogram) return;
+
+    self.currentHistogramFile = info;
+    [self.histogramPopover close];
+
+    NSView *contentView = [self buildHistogramContentForFile:info
+                                                       size:NSMakeSize(480, 300)
+                                              includeExpand:YES];
+
     NSViewController *vc = [[NSViewController alloc] init];
     vc.view = contentView;
 
@@ -634,11 +690,37 @@ static NSString *const kInPlaceKey = @"TFNInPlace";
     self.histogramPopover.contentSize = NSMakeSize(480, 300);
     self.histogramPopover.behavior = NSPopoverBehaviorTransient;
 
-    // Show anchored to the row in the table view
     NSRect anchorRect = [self.tableView rectOfRow:self.tableView.selectedRow];
     [self.histogramPopover showRelativeToRect:anchorRect
                                       ofView:self.tableView
                                preferredEdge:NSRectEdgeMaxY];
+}
+
+- (void)expandHistogramToWindow:(id)sender {
+    TFNProcessedFileInfo *info = self.currentHistogramFile;
+    if (!info) return;
+
+    [self.histogramPopover close];
+
+    NSView *contentView = [self buildHistogramContentForFile:info
+                                                       size:NSMakeSize(700, 450)
+                                              includeExpand:NO];
+
+    if (!self.histogramWindow) {
+        self.histogramWindow = [[NSWindow alloc]
+            initWithContentRect:NSMakeRect(0, 0, 700, 450)
+                      styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
+                                NSWindowStyleMaskResizable
+                        backing:NSBackingStoreBuffered
+                          defer:NO];
+        self.histogramWindow.minSize = NSMakeSize(400, 300);
+        self.histogramWindow.releasedWhenClosed = NO;
+    }
+
+    self.histogramWindow.title = [NSString stringWithFormat:@"%@ — Histogram", info.fileName];
+    self.histogramWindow.contentView = contentView;
+    [self.histogramWindow center];
+    [self.histogramWindow makeKeyAndOrderFront:nil];
 }
 
 - (void)updateTimingColumnVisibility {

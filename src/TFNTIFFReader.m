@@ -39,6 +39,7 @@ NSString *const TFNTIFFReaderErrorDomain = @"TFNTIFFReaderErrorDomain";
                                     error:(NSError **)error {
     // Suppress libtiff warnings/errors during read — we handle errors ourselves
     TIFFSetWarningHandler(NULL);
+    TIFFSetErrorHandler(NULL);
 
     TIFF *tif = TIFFOpen([path fileSystemRepresentation], "r");
     if (!tif) {
