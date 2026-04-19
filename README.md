@@ -1,6 +1,6 @@
 # Tiffen (TIFF Exposure Normalizer)
 
-A macOS CLI tool that normalizes the exposure range of TIFF files in a directory to match a user-specified base TIFF. Designed for photographers, scientists, and imaging professionals working with batches of TIFF images captured under varying exposure conditions.
+A macOS tool that normalizes the exposure range of TIFF files in a directory to match a user-specified base TIFF. Available as both a native macOS GUI application and a CLI tool. Designed for photographers, scientists, and imaging professionals working with batches of TIFF images captured under varying exposure conditions.
 
 Tiffen performs linear per-channel pixel remapping so that all images in a batch share the same exposure range as a chosen reference image, while preserving original bit depth, channel count, and compression.
 
@@ -21,7 +21,10 @@ brew install xcodegen
 # Generate the Xcode project from project.yml
 xcodegen generate
 
-# Build the release binary
+# Build the GUI app
+xcodebuild -scheme tiffenApp -configuration Release
+
+# Build the CLI tool
 xcodebuild -scheme tiffen -configuration Release
 ```
 
@@ -31,7 +34,19 @@ Run tests:
 xcodebuild test -scheme tiffenTests -destination 'platform=macOS'
 ```
 
-## Usage
+## GUI Application
+
+The Tiffen app provides a native macOS interface for batch normalization:
+
+1. **Select a base TIFF** — the reference image whose exposure range all others will match
+2. **Select an input directory** — containing the TIFFs to normalize
+3. **Click Normalize** — processing runs in the background with a live progress bar
+
+The results table shows per-file status, timing breakdown (read/range/normalize/write), and any errors or warnings. Click a row to view before/after histograms in a popover.
+
+Processing options (CPU/memory limits, max parallel jobs, in-place mode) are available in the Preferences window.
+
+## CLI Usage
 
 ```
 tiffen <base-tiff> <input-directory> [options]
@@ -95,19 +110,53 @@ tiffen reference.tiff ./captures -o ./output -j 4
 
 Tiffen is written in Objective-C and uses Metal compute shaders on Apple Silicon for GPU-accelerated processing.
 
+The project is organized into three Xcode targets defined in `project.yml`:
+
+- **TiffenCore** — shared framework used by both the CLI and GUI
+- **tiffen** — CLI tool linking TiffenCore
+- **tiffenApp** — macOS application linking TiffenCore
+
 | Component | Purpose |
 |---|---|
-| `main.m` | CLI entry point and argument parsing |
+| `cli/main.m` | CLI entry point and argument parsing |
+| `app/` | GUI application (AppDelegate, main window, preferences, file list, histogram view) |
 | `TFNExposureRange` | Per-channel min/max computation |
 | `TFNNormalizer` | Orchestrator: directory enumeration, parallel dispatch |
 | `TFNMetalNormalizer` | GPU-accelerated normalization via Metal |
 | `TFNCPUNormalizer` | CPU reference implementation (fallback) |
+| `TFNHistogramData` | GPU-fused histogram computation |
 | `TFNTIFFReader` / `TFNTIFFWriter` | TIFF I/O via libtiff |
 | `normalize.metal` | Metal compute kernels for parallel reduction and normalization |
 
 The Metal path leverages Apple Silicon's unified memory architecture to avoid CPU-GPU copy overhead. Concurrency defaults to 90% of available CPU cores and RAM.
 
 Supports 8-bit, 16-bit, and 32-bit (integer and float) TIFF files.
+
+## Generating Test Images
+
+A test fixture generator is included to create 28 TIFF files with known characteristics for testing:
+
+```bash
+# Generate test images to test-images/ at the repo root
+./tools/generate-test-tiffs.sh
+
+# Generate to a custom directory
+./tools/generate-test-tiffs.sh /path/to/output
+```
+
+The generated files cover a range of formats and patterns:
+
+| Category | Files |
+|---|---|
+| Base reference | `BASE_reference.tiff` (8-bit RGB, moderate exposure) |
+| 8-bit grayscale | Dark, normal, bright, full-range, and narrow-range exposures |
+| 8-bit patterns | Checkerboards (high/low contrast), sine waves (dark/bright) |
+| 8-bit RGB | Dark, bright, red-heavy, blue-heavy, vignettes |
+| 16-bit | Grayscale (dark, normal, bright) and RGB (wide/narrow range) |
+| 32-bit float | Dark, normal, bright, HDR (0–5 range) |
+| Edge cases | Uniform pixel values, tiny (32x32), large (2048x2048) |
+
+Files use a mix of compression schemes (Deflate, LZW, PackBits, None). The generated files are gitignored.
 
 ## License
 
