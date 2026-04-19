@@ -35,5 +35,8 @@ Thumbs.db
 .vscode/
 .idea/
 
+# Generated test images
+test-images/
+
 # Environment
 .env*
