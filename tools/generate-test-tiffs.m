@@ -13,6 +13,8 @@
 #import <tiffio.h>
 #include <math.h>
 
+static const char *compressionName(uint16_t c);
+
 static void writeTIFF(NSString *path,
                       uint32_t width, uint32_t height,
                       uint16_t bps, uint16_t spp, BOOL isFloat,
@@ -48,13 +50,26 @@ static void writeTIFF(NSString *path,
     }
 
     TIFFClose(tif);
-    fprintf(stdout, "  Created: %s\n", path.lastPathComponent.UTF8String);
+    fprintf(stdout, "  Created: %-35s [%s]\n", path.lastPathComponent.UTF8String,
+            compressionName(compression));
 }
 
 #pragma mark - 8-bit Generators
 
+// Compression name for printing
+static const char *compressionName(uint16_t c) {
+    switch (c) {
+        case COMPRESSION_NONE: return "None";
+        case COMPRESSION_DEFLATE: return "Deflate";
+        case COMPRESSION_LZW: return "LZW";
+        case COMPRESSION_PACKBITS: return "PackBits";
+        default: return "Unknown";
+    }
+}
+
 static void generateGrayscaleGradient8(NSString *path, uint32_t w, uint32_t h,
-                                        uint8_t minVal, uint8_t maxVal) {
+                                        uint8_t minVal, uint8_t maxVal,
+                                        uint16_t compression) {
     uint8_t *pixels = malloc(w * h);
     for (uint32_t y = 0; y < h; y++) {
         for (uint32_t x = 0; x < w; x++) {
@@ -62,14 +77,15 @@ static void generateGrayscaleGradient8(NSString *path, uint32_t w, uint32_t h,
             pixels[y * w + x] = (uint8_t)(minVal + t * (maxVal - minVal));
         }
     }
-    writeTIFF(path, w, h, 8, 1, NO, pixels, COMPRESSION_DEFLATE);
+    writeTIFF(path, w, h, 8, 1, NO, pixels, compression);
     free(pixels);
 }
 
 static void generateRGBGradient8(NSString *path, uint32_t w, uint32_t h,
                                   uint8_t rMin, uint8_t rMax,
                                   uint8_t gMin, uint8_t gMax,
-                                  uint8_t bMin, uint8_t bMax) {
+                                  uint8_t bMin, uint8_t bMax,
+                                  uint16_t compression) {
     uint8_t *pixels = malloc(w * h * 3);
     for (uint32_t y = 0; y < h; y++) {
         for (uint32_t x = 0; x < w; x++) {
@@ -81,12 +97,13 @@ static void generateRGBGradient8(NSString *path, uint32_t w, uint32_t h,
             pixels[idx + 2] = (uint8_t)(bMin + (tx + ty) / 2.0f * (bMax - bMin));
         }
     }
-    writeTIFF(path, w, h, 8, 3, NO, pixels, COMPRESSION_DEFLATE);
+    writeTIFF(path, w, h, 8, 3, NO, pixels, compression);
     free(pixels);
 }
 
 static void generateCheckerboard8(NSString *path, uint32_t w, uint32_t h,
-                                   uint32_t blockSize, uint8_t light, uint8_t dark) {
+                                   uint32_t blockSize, uint8_t light, uint8_t dark,
+                                   uint16_t compression) {
     uint8_t *pixels = malloc(w * h);
     for (uint32_t y = 0; y < h; y++) {
         for (uint32_t x = 0; x < w; x++) {
@@ -94,12 +111,13 @@ static void generateCheckerboard8(NSString *path, uint32_t w, uint32_t h,
             pixels[y * w + x] = isLight ? light : dark;
         }
     }
-    writeTIFF(path, w, h, 8, 1, NO, pixels, COMPRESSION_DEFLATE);
+    writeTIFF(path, w, h, 8, 1, NO, pixels, compression);
     free(pixels);
 }
 
 static void generateSineWave8(NSString *path, uint32_t w, uint32_t h,
-                               uint8_t minVal, uint8_t maxVal, float frequency) {
+                               uint8_t minVal, uint8_t maxVal, float frequency,
+                               uint16_t compression) {
     uint8_t *pixels = malloc(w * h);
     for (uint32_t y = 0; y < h; y++) {
         for (uint32_t x = 0; x < w; x++) {
@@ -108,12 +126,13 @@ static void generateSineWave8(NSString *path, uint32_t w, uint32_t h,
             pixels[y * w + x] = (uint8_t)(minVal + t * (maxVal - minVal));
         }
     }
-    writeTIFF(path, w, h, 8, 1, NO, pixels, COMPRESSION_DEFLATE);
+    writeTIFF(path, w, h, 8, 1, NO, pixels, compression);
     free(pixels);
 }
 
 static void generateVignette8(NSString *path, uint32_t w, uint32_t h,
-                               uint8_t center, uint8_t edge) {
+                               uint8_t center, uint8_t edge,
+                               uint16_t compression) {
     uint8_t *pixels = malloc(w * h * 3);
     float cx = w / 2.0f, cy = h / 2.0f;
     float maxDist = sqrtf(cx * cx + cy * cy);
@@ -128,14 +147,15 @@ static void generateVignette8(NSString *path, uint32_t w, uint32_t h,
             pixels[idx + 2] = (uint8_t)(val * 0.8f);
         }
     }
-    writeTIFF(path, w, h, 8, 3, NO, pixels, COMPRESSION_DEFLATE);
+    writeTIFF(path, w, h, 8, 3, NO, pixels, compression);
     free(pixels);
 }
 
 #pragma mark - 16-bit Generators
 
 static void generateGrayscaleGradient16(NSString *path, uint32_t w, uint32_t h,
-                                         uint16_t minVal, uint16_t maxVal) {
+                                         uint16_t minVal, uint16_t maxVal,
+                                         uint16_t compression) {
     uint16_t *pixels = malloc(w * h * sizeof(uint16_t));
     for (uint32_t y = 0; y < h; y++) {
         for (uint32_t x = 0; x < w; x++) {
@@ -143,14 +163,15 @@ static void generateGrayscaleGradient16(NSString *path, uint32_t w, uint32_t h,
             pixels[y * w + x] = (uint16_t)(minVal + t * (maxVal - minVal));
         }
     }
-    writeTIFF(path, w, h, 16, 1, NO, pixels, COMPRESSION_DEFLATE);
+    writeTIFF(path, w, h, 16, 1, NO, pixels, compression);
     free(pixels);
 }
 
 static void generateRGBGradient16(NSString *path, uint32_t w, uint32_t h,
                                    uint16_t rMin, uint16_t rMax,
                                    uint16_t gMin, uint16_t gMax,
-                                   uint16_t bMin, uint16_t bMax) {
+                                   uint16_t bMin, uint16_t bMax,
+                                   uint16_t compression) {
     uint16_t *pixels = malloc(w * h * 3 * sizeof(uint16_t));
     for (uint32_t y = 0; y < h; y++) {
         for (uint32_t x = 0; x < w; x++) {
@@ -162,14 +183,15 @@ static void generateRGBGradient16(NSString *path, uint32_t w, uint32_t h,
             pixels[idx + 2] = (uint16_t)(bMin + (tx + ty) / 2.0f * (bMax - bMin));
         }
     }
-    writeTIFF(path, w, h, 16, 3, NO, pixels, COMPRESSION_DEFLATE);
+    writeTIFF(path, w, h, 16, 3, NO, pixels, compression);
     free(pixels);
 }
 
 #pragma mark - 32-bit Float Generators
 
 static void generateGrayscaleGradientFloat(NSString *path, uint32_t w, uint32_t h,
-                                            float minVal, float maxVal) {
+                                            float minVal, float maxVal,
+                                            uint16_t compression) {
     float *pixels = malloc(w * h * sizeof(float));
     for (uint32_t y = 0; y < h; y++) {
         for (uint32_t x = 0; x < w; x++) {
@@ -177,7 +199,7 @@ static void generateGrayscaleGradientFloat(NSString *path, uint32_t w, uint32_t 
             pixels[y * w + x] = minVal + t * (maxVal - minVal);
         }
     }
-    writeTIFF(path, w, h, 32, 1, YES, pixels, COMPRESSION_DEFLATE);
+    writeTIFF(path, w, h, 32, 1, YES, pixels, compression);
     free(pixels);
 }
 
@@ -201,75 +223,79 @@ int main(int argc, const char *argv[]) {
 
         uint32_t W = 512, H = 512;
 
-        fprintf(stdout, "Generating test TIFFs in %s/\n\n", outputDir.UTF8String);
+        // Compression abbreviations for output
+        uint16_t DEFLATE = COMPRESSION_DEFLATE;
+        uint16_t LZW     = COMPRESSION_LZW;
+        uint16_t NONE    = COMPRESSION_NONE;
+        uint16_t PACK    = COMPRESSION_PACKBITS;
+
+        fprintf(stdout, "Generating test TIFFs in %s/\n", outputDir.UTF8String);
+        fprintf(stdout, "Compression mix: Deflate, LZW, None, PackBits\n\n");
 
         // === BASE FILE ===
-        // This is the reference file all others will be normalized to.
         fprintf(stdout, "Base file (use this as the reference):\n");
         generateRGBGradient8(p(@"BASE_reference.tiff"), W, H,
-                             40, 220,    // R: moderate range
-                             30, 200,    // G: moderate range
-                             50, 210);   // B: moderate range
+                             40, 220, 30, 200, 50, 210, DEFLATE);
 
-        // === 8-bit GRAYSCALE — varying exposure ranges ===
-        fprintf(stdout, "\n8-bit grayscale (varying exposure):\n");
-        generateGrayscaleGradient8(p(@"gray_dark.tiff"), W, H, 0, 80);
-        generateGrayscaleGradient8(p(@"gray_normal.tiff"), W, H, 30, 200);
-        generateGrayscaleGradient8(p(@"gray_bright.tiff"), W, H, 150, 255);
-        generateGrayscaleGradient8(p(@"gray_full_range.tiff"), W, H, 0, 255);
-        generateGrayscaleGradient8(p(@"gray_narrow.tiff"), W, H, 100, 130);
+        // === 8-bit GRAYSCALE — varying exposure + compression ===
+        fprintf(stdout, "\n8-bit grayscale (varying exposure + compression):\n");
+        generateGrayscaleGradient8(p(@"gray_dark.tiff"), W, H, 0, 80, DEFLATE);
+        generateGrayscaleGradient8(p(@"gray_normal.tiff"), W, H, 30, 200, LZW);
+        generateGrayscaleGradient8(p(@"gray_bright.tiff"), W, H, 150, 255, NONE);
+        generateGrayscaleGradient8(p(@"gray_full_range.tiff"), W, H, 0, 255, PACK);
+        generateGrayscaleGradient8(p(@"gray_narrow.tiff"), W, H, 100, 130, DEFLATE);
 
         // === 8-bit GRAYSCALE — patterns ===
         fprintf(stdout, "\n8-bit grayscale patterns:\n");
-        generateCheckerboard8(p(@"checker_high_contrast.tiff"), W, H, 32, 240, 15);
-        generateCheckerboard8(p(@"checker_low_contrast.tiff"), W, H, 32, 130, 110);
-        generateSineWave8(p(@"sine_dark.tiff"), W, H, 0, 100, 4.0f);
-        generateSineWave8(p(@"sine_bright.tiff"), W, H, 128, 255, 6.0f);
+        generateCheckerboard8(p(@"checker_high_contrast.tiff"), W, H, 32, 240, 15, LZW);
+        generateCheckerboard8(p(@"checker_low_contrast.tiff"), W, H, 32, 130, 110, NONE);
+        generateSineWave8(p(@"sine_dark.tiff"), W, H, 0, 100, 4.0f, PACK);
+        generateSineWave8(p(@"sine_bright.tiff"), W, H, 128, 255, 6.0f, DEFLATE);
 
         // === 8-bit RGB — varying exposure ===
         fprintf(stdout, "\n8-bit RGB (varying exposure):\n");
         generateRGBGradient8(p(@"rgb_dark.tiff"), W, H,
-                             0, 60, 0, 50, 0, 70);
+                             0, 60, 0, 50, 0, 70, LZW);
         generateRGBGradient8(p(@"rgb_bright.tiff"), W, H,
-                             180, 255, 160, 250, 170, 255);
+                             180, 255, 160, 250, 170, 255, NONE);
         generateRGBGradient8(p(@"rgb_red_heavy.tiff"), W, H,
-                             100, 255, 10, 80, 10, 60);
+                             100, 255, 10, 80, 10, 60, DEFLATE);
         generateRGBGradient8(p(@"rgb_blue_heavy.tiff"), W, H,
-                             10, 60, 10, 80, 100, 255);
-        generateVignette8(p(@"vignette_bright.tiff"), W, H, 230, 40);
-        generateVignette8(p(@"vignette_dark.tiff"), W, H, 120, 10);
+                             10, 60, 10, 80, 100, 255, PACK);
+        generateVignette8(p(@"vignette_bright.tiff"), W, H, 230, 40, LZW);
+        generateVignette8(p(@"vignette_dark.tiff"), W, H, 120, 10, NONE);
 
         // === 16-bit ===
         fprintf(stdout, "\n16-bit images:\n");
-        generateGrayscaleGradient16(p(@"gray16_dark.tiff"), W, H, 0, 8000);
-        generateGrayscaleGradient16(p(@"gray16_normal.tiff"), W, H, 5000, 55000);
-        generateGrayscaleGradient16(p(@"gray16_bright.tiff"), W, H, 40000, 65535);
+        generateGrayscaleGradient16(p(@"gray16_dark.tiff"), W, H, 0, 8000, DEFLATE);
+        generateGrayscaleGradient16(p(@"gray16_normal.tiff"), W, H, 5000, 55000, LZW);
+        generateGrayscaleGradient16(p(@"gray16_bright.tiff"), W, H, 40000, 65535, NONE);
         generateRGBGradient16(p(@"rgb16_wide.tiff"), W, H,
-                              1000, 60000, 2000, 58000, 500, 62000);
+                              1000, 60000, 2000, 58000, 500, 62000, PACK);
         generateRGBGradient16(p(@"rgb16_narrow.tiff"), W, H,
-                              30000, 35000, 28000, 34000, 31000, 36000);
+                              30000, 35000, 28000, 34000, 31000, 36000, DEFLATE);
 
         // === 32-bit float ===
         fprintf(stdout, "\n32-bit float images:\n");
-        generateGrayscaleGradientFloat(p(@"float_dark.tiff"), W, H, 0.0f, 0.3f);
-        generateGrayscaleGradientFloat(p(@"float_normal.tiff"), W, H, 0.1f, 0.8f);
-        generateGrayscaleGradientFloat(p(@"float_bright.tiff"), W, H, 0.6f, 1.0f);
-        generateGrayscaleGradientFloat(p(@"float_hdr.tiff"), W, H, 0.0f, 5.0f);
+        generateGrayscaleGradientFloat(p(@"float_dark.tiff"), W, H, 0.0f, 0.3f, DEFLATE);
+        generateGrayscaleGradientFloat(p(@"float_normal.tiff"), W, H, 0.1f, 0.8f, LZW);
+        generateGrayscaleGradientFloat(p(@"float_bright.tiff"), W, H, 0.6f, 1.0f, NONE);
+        generateGrayscaleGradientFloat(p(@"float_hdr.tiff"), W, H, 0.0f, 5.0f, PACK);
 
         // === Edge cases ===
         fprintf(stdout, "\nEdge cases:\n");
-        // Uniform (flat exposure — should trigger warning)
+        // Uniform (flat exposure — should trigger warning), uncompressed
         {
             uint8_t *pixels = calloc(W * H, 1);
             memset(pixels, 128, W * H);
-            writeTIFF(p(@"uniform_128.tiff"), W, H, 8, 1, NO, pixels, COMPRESSION_DEFLATE);
+            writeTIFF(p(@"uniform_128.tiff"), W, H, 8, 1, NO, pixels, NONE);
             free(pixels);
         }
-        // Very small image
-        generateGrayscaleGradient8(p(@"tiny_32x32.tiff"), 32, 32, 20, 180);
-        // Large image
+        // Very small image, PackBits
+        generateGrayscaleGradient8(p(@"tiny_32x32.tiff"), 32, 32, 20, 180, PACK);
+        // Large image, LZW
         generateRGBGradient8(p(@"large_2048x2048.tiff"), 2048, 2048,
-                             10, 245, 5, 240, 15, 250);
+                             10, 245, 5, 240, 15, 250, LZW);
 
         fprintf(stdout, "\nDone! %lu files generated.\n",
                 (unsigned long)[[fm contentsOfDirectoryAtPath:outputDir error:nil] count]);

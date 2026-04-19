@@ -114,7 +114,9 @@ correct behavior (flat exposure warning, successful output).
   bright, and HDR (0–5 range).
 - **FR-009**: System MUST generate edge case files: uniform (flat exposure),
   tiny (32x32), and large (2048x2048).
-- **FR-010**: All generated TIFFs MUST use Deflate compression.
+- **FR-010**: Generated TIFFs MUST use a mix of compression schemes
+  (Deflate, LZW, None, PackBits) distributed across files to verify
+  that Tiffen preserves original compression in normalized output.
 - **FR-011**: The generator MUST be written in Objective-C and compiled
   with clang linking libtiff. No additional dependencies.
 - **FR-012**: Generated test images MUST be gitignored (`test-images/`).
