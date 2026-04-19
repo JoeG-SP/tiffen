@@ -378,8 +378,9 @@ static NSString *const kInPlaceKey = @"TFNInPlace";
         self.engine.inputDirectory = path;
         [[NSUserDefaults standardUserDefaults] setObject:path forKey:kInputDirKey];
 
-        // Auto-populate output directory
-        if (self.outputDirField.stringValue.length == 0) {
+        // Auto-populate output directory to <input>/normalized/
+        // Always update unless in-place mode is active
+        if (![[NSUserDefaults standardUserDefaults] boolForKey:kInPlaceKey]) {
             NSString *outPath = [path stringByAppendingPathComponent:@"normalized"];
             self.outputDirField.stringValue = outPath;
             self.outputDirField.toolTip = outPath;
@@ -440,6 +441,14 @@ static NSString *const kInPlaceKey = @"TFNInPlace";
         self.inputDirField.toolTip = path;
         self.engine.inputDirectory = path;
         [[NSUserDefaults standardUserDefaults] setObject:path forKey:kInputDirKey];
+        // Auto-populate output directory
+        if (![[NSUserDefaults standardUserDefaults] boolForKey:kInPlaceKey]) {
+            NSString *outPath = [path stringByAppendingPathComponent:@"normalized"];
+            self.outputDirField.stringValue = outPath;
+            self.outputDirField.toolTip = outPath;
+            self.engine.outputDirectory = outPath;
+            [[NSUserDefaults standardUserDefaults] setObject:outPath forKey:kOutputDirKey];
+        }
         [self updateNormalizeButtonState];
         return YES;
     } else if (NSPointInRect(loc, self.outputDirField.frame)) {
